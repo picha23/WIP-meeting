@@ -1,0 +1,6 @@
+{
+  "name": "WIP Tracker - Weekly Deliverables & Meeting Dispatch",
+  "description": "Track weekly deliverables, manage blockers and dependencies, preserve sprint archives, and generate structured meeting reports in 1-click.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
