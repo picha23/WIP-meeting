@@ -1,11 +1,18 @@
 # WIP Tracker & Penjana Laporan (v2.4)
 
+[![Akses Aplikasi Langsung](https://img.shields.io/badge/🚀_Akses_Aplikasi-ai.studio-success?style=for-the-badge&logo=googlechrome&logoColor=white)](https://ai.studio/apps/38f8e3f7-912a-4801-98ec-380bb1c9e320)
+<br/>
+
 [![React](https://img.shields.io/badge/React-19.0-61dafb.svg?style=flat&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg?style=flat&logo=typescript)](https://www.typescriptlang.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-Firestore_%26_Auth-ffca28.svg?style=flat&logo=firebase)](https://firebase.google.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.0-38bdf8.svg?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/Vite-8.x-646cff.svg?style=flat&logo=vite)](https://vitejs.dev/)
 [![Lesen: Apache-2.0](https://img.shields.io/badge/Lesen-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+> 🚀 **Pautan Aplikasi Langsung (*Live Web App*)**:  
+> Akses dan uji aplikasi secara langsung di pelayar tanpa perlu sebarang muat turun atau pemasangan perisian:  
+> 🔗 **[https://ai.studio/apps/38f8e3f7-912a-4801-98ec-380bb1c9e320](https://ai.studio/apps/38f8e3f7-912a-4801-98ec-380bb1c9e320)**
 
 Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional solo, pereka grafik kanan (*Senior Graphic Designer*), ketua teknikal, dan pengurus projek. **WIP Tracker** memudahkan penjejakan tugasan mingguan, pemantauan isu & tugasan tertangguh (*pending & risks*), arkib retrospektif sprint, dan penjanaan laporan mesyuarat Work-In-Progress (WIP) serta sesi *standup* secara berformat dalam 1-klik, kini disokong oleh pangkalan data awan **Firebase Firestore & Pengesahan Google**.
 
@@ -115,7 +122,13 @@ wip-tracker/
 
 ## 🚀 Panduan Memulakan Projek
 
-### Keperluan Awal
+### 🌐 Akses Terus Tanpa Pemasangan (*Live Test*)
+Bagi pengguna atau rakan sepasukan yang ingin terus mencuba dan menguji fungsi penuh aplikasi tanpa perlu memuat turun kod sumber atau memasang dependensi:  
+👉 **Buka terus di pelayar:** [https://ai.studio/apps/38f8e3f7-912a-4801-98ec-380bb1c9e320](https://ai.studio/apps/38f8e3f7-912a-4801-98ec-380bb1c9e320)
+
+---
+
+### Keperluan Awal (Pembangunan Tempatan)
 
 - [Node.js](https://nodejs.org/) (versi 18 ke atas disyorkan)
 - Pengurus pakej: `npm` atau `bun`
