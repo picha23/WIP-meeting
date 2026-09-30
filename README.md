@@ -7,7 +7,7 @@
 [![Vite](https://img.shields.io/badge/Vite-8.x-646cff.svg?style=flat&logo=vite)](https://vitejs.dev/)
 [![Lesen: Apache-2.0](https://img.shields.io/badge/Lesen-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional solo, pereka grafik kanan (*Senior Graphic Designer*), ketua teknikal, dan pengurus projek. **WIP Tracker** memudahkan penjejakan tugasan mingguan, eskalasi halangan (*blockers*), arkib retrospektif sprint, dan penjanaan laporan mesyuarat Work-In-Progress (WIP) serta sesi *standup* secara berformat dalam 1-klik, kini disokong oleh pangkalan data awan **Firebase Firestore & Pengesahan Google**.
+Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional solo, pereka grafik kanan (*Senior Graphic Designer*), ketua teknikal, dan pengurus projek. **WIP Tracker** memudahkan penjejakan tugasan mingguan, pemantauan isu & tugasan tertangguh (*pending & risks*), arkib retrospektif sprint, dan penjanaan laporan mesyuarat Work-In-Progress (WIP) serta sesi *standup* secara berformat dalam 1-klik, kini disokong oleh pangkalan data awan **Firebase Firestore & Pengesahan Google**.
 
 ---
 
@@ -152,42 +152,39 @@ wip-tracker/
 
 ---
 
-## 📤 Arahan Lengkap Push ke GitHub
+## 📤 Panduan Kemas Kini README & Kod ke GitHub
 
-Ikuti panduan di bawah untuk memuat naik atau mengemas kini kod sumber serta fail `README.md` ini ke GitHub:
+Ikuti panduan di bawah untuk memuat naik atau mengemas kini fail `README.md` dan kod terkini ke repositori GitHub anda:
 
-### Situasi A: Repositori Baru (Pertama Kali Sambung ke GitHub)
-Sekiranya anda baru mencipta repositori kosong di GitHub (contohnya `wip-tracker`):
+### Kaedah 1: Menggunakan Perintah Git (Terminal / CLI)
 
+#### A. Sekiranya Repositori Sudah Disambungkan ke GitHub:
+Jalankan perintah ini di dalam direktori projek anda untuk menolak perubahan README terbaharu ke GitHub:
 ```bash
-# 1. Pastikan cawangan utama dinamakan 'main'
-git branch -M main
-
-# 2. Sambungkan ke repositori GitHub anda (gantikan URL dengan repositori anda)
-git remote add origin https://github.com/<username>/wip-tracker.git
-
-# 3. Hantar kod dan fail README ke GitHub
-git push -u origin main
-```
-
-### Situasi B: Mengemas kini Repositori Sedia Ada (Update README & Kod Terkini)
-Sekiranya repositori telah bersambung dengan GitHub dan anda ingin menolak komit terbaharu:
-
-```bash
-# 1. Semak status perubahan fail
-git status
-
-# 2. Tambah semua fail kemas kini ke staging
-git add .
-
-# 3. Buat komit dengan nota perubahan
-git commit -m "docs: kemas kini README.md dengan maklumat profil pengguna dan arahan GitHub lengkap"
-
-# 4. Hantar perubahan ke GitHub
+git add README.md
+git commit -m "docs: kemas kini README.md dengan jawatan Senior Graphic Designer dan status Pending"
 git push origin main
 ```
 
-> 💡 **Nota Pengesahan GitHub**: Sekiranya terminal meminta kata laluan semasa arahan `git push`, gunakan **GitHub Personal Access Token (PAT)** dengan skop `repo` atau gunakan sambungan kunci **SSH** (`git@github.com:<username>/wip-tracker.git`).
+#### B. Sekiranya Repositori Baru (Belum Disambung ke GitHub):
+Sekiranya anda baru mencipta repositori di akaun GitHub anda (cth: `https://github.com/<username>/wip-tracker`):
+```bash
+git branch -M main
+git remote add origin https://github.com/<username-anda>/wip-tracker.git
+git push -u origin main
+```
+
+> 💡 **Nota Pengesahan GitHub**: Sekiranya terminal meminta pengesahan kata laluan (*authentication*), gunakan **GitHub Personal Access Token (PAT)** dengan izin `repo` atau gunakan pautan **SSH** (`git@github.com:<username-anda>/wip-tracker.git`).
+
+---
+
+### Kaedah 2: Kemas Kini Terus Melalui Laman Web GitHub (*Web Editor* - Paling Pantas)
+Sekiranya anda ingin mengemas kini fail `README.md` pada repositori GitHub serta-merta tanpa terminal:
+1. Buka laman repositori anda di **[GitHub.com](https://github.com/)**.
+2. Klik pada fail **`README.md`**.
+3. Klik ikon pensel **✏️ (Edit this file)** di bahagian kanan atas.
+4. Salin (*copy*) keseluruhan isi kandungan fail `README.md` ini dan tampal (*paste*) menggantikan teks sedia ada.
+5. Klik butang hijau **Commit changes...**, masukkan mesej komit (cth: `docs: kemas kini README`), dan klik **Commit changes**. Fail di GitHub akan dikemas kini serta-merta!
 
 ---
 
@@ -197,7 +194,7 @@ git push origin main
 | :--- | :--- | :--- |
 | **TC01** | Cipta tugasan dengan semua medan sah dan pastikan ia dipaparkan pada papan pemuka | ✅ Lulus |
 | **TC02** | Cuba simpan tugasan tanpa Nama Tugasan atau Pemohon; sahkan ralat pengesahan dipaparkan | ✅ Lulus |
-| **TC03** | Jana laporan dengan tugasan aktif; sahkan pengelompokan (Selesai, Sedang Berjalan, Terhalang) | ✅ Lulus |
+| **TC03** | Jana laporan dengan tugasan aktif; sahkan pengelompokan (Selesai, Sedang Berjalan, Pending) | ✅ Lulus |
 | **TC04** | Klik butang "Salin ke Papan Klip" dan sahkan kandungan teks sepadan dengan pratonton modal | ✅ Lulus |
 | **TC05** | Muat semula pelayar (*refresh*); sahkan storan tempatan mengekalkan semua rekod data | ✅ Lulus |
 | **TC06** | Tukar minggu sprint dan sahkan tugasan diasingkan mengikut minggu masing-masing | ✅ Lulus |
