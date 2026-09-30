@@ -1,148 +1,149 @@
-# WIP Tracker & Report Generator (v2.4)
+# WIP Tracker & Penjana Laporan (v2.4)
 
 [![React](https://img.shields.io/badge/React-19.0-61dafb.svg?style=flat&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg?style=flat&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.0-38bdf8.svg?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/Vite-8.x-646cff.svg?style=flat&logo=vite)](https://vitejs.dev/)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Lesen: Apache-2.0](https://img.shields.io/badge/Lesen-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A high-velocity personal productivity web application engineered for individual practitioners, senior product designers, tech leads, and managers. **WIP Tracker** streamlines weekly deliverable tracking, blocker escalation, sprint retrospectives, and 1-click formatted meeting report generation for Work-In-Progress (WIP) and standup syncs.
+Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional solo, ketua pereka produk (*Senior Product Designer*), ketua teknikal, dan pengurus projek. **WIP Tracker** memudahkan penjejakan tugasan mingguan, eskalasi halangan (*blockers*), arkib retrospektif sprint, dan penjanaan laporan mesyuarat Work-In-Progress (WIP) serta sesi *standup* secara berformat dalam 1-klik.
 
 ---
 
-## 📸 Key Workspace Views
+## 📸 Paparan Utama Ruang Kerja (*Workspace Views*)
 
-| View | Purpose & Highlights |
+| Paparan | Tujuan & Keupayaan Utama |
 | :--- | :--- |
-| **Weekly Deliverables** | Active sprint dashboard with real-time KPI metrics, search filtering, deliverable status cycling (`In Progress` ⇄ `Completed` ⇄ `Blocked`), and quick CRUD forms. |
-| **Report Generator** | Real-time markdown standup compiler with presets (*Standard WIP*, *Executive Bullets*, *Tech Slack*, *Client Digest*), modular content toggles, and 1-click clipboard dispatches. |
-| **Weekly Sprints Archive** | Historical sprint ledger across quarters (Q3 / Q4), trailing 6-week velocity micro-charts, retrospective notes, and stakeholder contribution analytics. |
-| **Blockers & Risks Tracker** | Incident resolution center tracking root cause impediments, escalation assignees, resolution SLAs (with inline sparklines), and SOP escalation playbooks. |
+| **Tugasan Mingguan (*Weekly Deliverables*)** | Papan pemuka sprint aktif dengan matrik KPI masa nyata, penapisan carian pantas, kitaran status tugasan (`Sedang Berjalan` ⇄ `Selesai` ⇄ `Terhalang`), dan borang kemasukan/pengeditan segera. |
+| **Penjana Laporan (*Report Generator*)** | Kompiler laporan Markdown masa nyata dengan pratetap (*Format Standard WIP*, *Poin Eksekutif*, *Format Slack/Discord*, *Ringkasan Pelanggan*), togol kandungan modular, dan salin ke papan klip dalam 1-klik. |
+| **Arkib Sprint Mingguan (*Sprints Archive*)** | Lejar sprint bersejarah merentasi suku tahun (Q3 / Q4), carta mikro halaju 6 minggu lepas, nota retrospektif sprint, dan analitik sumbangan pemegang taruh (*stakeholders*). |
+| **Penjejak Halangan & Risiko (*Blockers & Risks*)** | Pusat penyelesaian insiden untuk menjejak punca masalah teknikal, pihak bertanggungjawab, SLA penyelesaian (beserta carta *sparkline*), dan buku panduan SOP eskalasi. |
 
 ---
 
-## ✨ Features
+## ✨ Ciri-Ciri Utama
 
-- **⚡ 1-Click Meeting Dispatch Generator**:
-  - Automatically compiles active tasks into structured, executive-ready text.
-  - Delivery tones: *Executive / Crisp*, *Tech / Detailed*, and *Casual Standup*.
-  - Modular toggles: *Show Blockers First*, *Include Requester/Lead*, *Include Target ETAs*, and *Velocity Metric Badges*.
-  - Direct export to **Clipboard**, **Slack Format**, **`.md` Markdown**, and **`.txt` Plain Text**.
-  - Local session history for re-copying past dispatches in one click.
+- **⚡ Penjana Laporan Mesyuarat 1-Klik**:
+  - Menyusun tugasan aktif secara automatik ke dalam teks berstruktur sedia bentang.
+  - Pilihan nada penyampaian: *Eksekutif / Ringkas*, *Teknikal / Terperinci*, dan *Santai / Standup*.
+  - Togol modular: *Paparkan Halangan Di Atas*, *Sertakan Nama Pemohon/Ketua*, *Sertakan Sasaran ETA & Langkah Seterusnya*, serta *Lencana Matrik Halaju*.
+  - Eksport terus ke **Papan Klip (*Clipboard*)**, **Format Slack**, **Fail Markdown (`.md`)**, dan **Teks Biasa (`.txt`)**.
+  - Sejarah sesi tempatan untuk menyalin semula laporan lepas dengan serta-merta.
 
-- **📊 Comprehensive Sprint Metrics**:
-  - Live counters for Total Deliverables, In Progress, Completed, and Blocked & Risks.
-  - Proportional animated progress bars and velocity percentage rings.
+- **📊 Metrik & KPI Sprint Menyeluruh**:
+  - Pengiraan langsung untuk Jumlah Tugasan, Sedang Berjalan, Selesai, dan Halangan & Risiko.
+  - Bar kemajuan beranimasi dan cincin peratusan halaju visual.
 
-- **🚫 Incident & Blocker Triage**:
-  - Categorization of impediments (*Critical Hard Blocker*, *At Risk / Dependency Pending*, *Resolved*).
-  - SLA tracking with average unblocking duration and sparkline visualization.
-  - Built-in Standard Operating Procedure (SOP) escalation guide.
+- **🚫 Pengurusan Insiden & Halangan Berisiko**:
+  - Pengkategorian keterukan (*Halangan Kritikal*, *Berisiko / Menunggu Dependensi*, *Telah Selesai*).
+  - Penjejakan SLA dengan purata tempoh penyelesaian dan visualisasi *sparkline*.
+  - Panduan SOP (Prosedur Operasi Standard) eskalasi bertempoh masa (&lt;24j, &gt;24j, &gt;48j).
 
-- **💾 Offline-First Local Storage Engine**:
-  - Zero external server or cloud database required.
-  - Automatically persists state in browser `localStorage` / IndexedDB.
-  - Storage Manager allows full JSON data backup export and sample reset.
+- **💾 Enjin Storan Tempatan Luar Talian (*Offline-First*)**:
+  - Tidak memerlukan pelayan luaran atau pangkalan data awan pihak ketiga.
+  - Menyimpan data secara automatik dalam pelayar melalui `localStorage` / IndexedDB.
+  - Pengurus Storan membolehkan sandaran penuh (*backup JSON*) dieksport atau data ditetapkan semula ke sampel asal.
 
-- **🎨 Multi-Theme Design System**:
-  - Toggle between **Executive Forest Green** (`#218300`) and **Modern Indigo** (`#4f46e5`) accents.
-  - Dense, scannable data layouts built with Tailwind CSS v4 and Google Fonts (*Inter* & *JetBrains Mono*).
+- **🎨 Sistem Reka Bentuk Berbilang Tema**:
+  - Suis pertukaran antara tema **Hijau Hutan Eksekutif** (`#218300`) dan **Indigo Moden** (`#4f46e5`).
+  - Susun atur data padat, kemas, dan mudah dibaca berasaskan Tailwind CSS v4 serta tipografi Google Fonts (*Inter* & *JetBrains Mono*).
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## 🛠️ Tindanan Teknologi & Arkitektur
 
-- **Frontend Framework**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
-- **Build Tool**: [Vite 8](https://vitejs.dev/) with `@tailwindcss/vite`
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Icons**: [Lucide React](https://lucide.dev/) + Google Material Symbols
-- **State & Storage**: Client-side reactive state synced with browser Web Storage
+- **Rangka Kerja (*Framework*)**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- **Alat Bina (*Build Tool*)**: [Vite 8](https://vitejs.dev/) bersama `@tailwindcss/vite`
+- **Gaya Visual (*Styling*)**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Ikon**: [Lucide React](https://lucide.dev/) + Google Material Symbols
+- **Pengurusan Keadaan & Storan**: *Client-side reactive state* diselaraskan bersama *Web Storage* pelayar
 
 ```
 wip-tracker/
-├── index.html                  # HTML entry point with Inter & JetBrains Mono fonts
-├── metadata.json               # Applet capability descriptor
-├── package.json                # Project dependencies and npm scripts
-├── vite.config.ts              # Vite 8 config with Tailwind v4 plugin
+├── index.html                  # Titik masuk HTML dengan font Inter & JetBrains Mono
+├── metadata.json               # Deskriptor keupayaan aplikasi
+├── package.json                # Dependensi projek dan skrip npm
+├── vite.config.ts              # Konfigurasi Vite 8 dengan pemalam Tailwind v4
+├── README.md                   # Dokumentasi penuh projek (Bahasa Melayu)
 ├── src/
-│   ├── main.tsx                # React entry point
-│   ├── App.tsx                 # Root layout, router-like view switcher, and modal state
-│   ├── index.css               # Global Tailwind CSS definitions
+│   ├── main.tsx                # Titik masuk React
+│   ├── App.tsx                 # Rangka utama, penukar paparan, dan pengurusan modal
+│   ├── index.css               # Definisi global Tailwind CSS
 │   ├── types/
-│   │   └── index.ts            # TypeScript interfaces (TaskItem, SprintWeek, BlockerIncident, etc.)
+│   │   └── index.ts            # Antaramuka TypeScript (TaskItem, SprintWeek, dsb.)
 │   ├── utils/
-│   │   ├── storage.ts          # LocalStorage persistence, seed data, and storage metrics
-│   │   └── reportFormatter.ts  # Markdown & Slack digest compilation engine
+│   │   ├── storage.ts          # Enjin storan localStorage, data benih, dan metrik storan
+│   │   └── reportFormatter.ts  # Enjin kompilasi Markdown & format Slack
 │   └── components/
-│       ├── Header.tsx                  # Top navigation bar, sprint selector, and theme toggle
-│       ├── Sidebar.tsx                 # Navigation drawer with storage engine status
-│       ├── WeeklyDeliverablesView.tsx  # F01 & F02: Main tasks dashboard
-│       ├── ReportGeneratorView.tsx     # F03: Live report generator and history
-│       ├── WeeklySprintsArchiveView.tsx# F04: Historical sprint ledger & analytics
-│       ├── BlockersAndRisksView.tsx    # Incident resolution center & SLA metrics
-│       ├── Toast.tsx                   # Non-blocking notification feedback
+│       ├── Header.tsx                  # Bar navigasi atas, pemilih sprint, dan togol tema
+│       ├── Sidebar.tsx                 # Bar sisi navigasi dengan status enjin storan
+│       ├── WeeklyDeliverablesView.tsx  # F01 & F02: Papan pemuka tugasan mingguan
+│       ├── ReportGeneratorView.tsx     # F03: Penjana laporan langsung dan sejarah laporan
+│       ├── WeeklySprintsArchiveView.tsx# F04: Arkib lejar sprint bersejarah & analitik
+│       ├── BlockersAndRisksView.tsx    # Pusat penyelesaian insiden & metrik SLA
+│       ├── Toast.tsx                   # Notifikasi maklum balas pantas
 │       └── modals/
-│           ├── TaskModal.tsx           # Create / Edit task dialog
-│           ├── QuickReportModal.tsx    # Instant 1-click text report dialog
-│           ├── LogBlockerModal.tsx     # Log new risk/impediment dialog
-│           ├── ExportEscalationModal.tsx# Export markdown escalation brief
-│           ├── PlaybookModal.tsx       # Team unblocking SOP guide
-│           └── StorageModal.tsx        # Local database backup & reset manager
+│           ├── TaskModal.tsx           # Dialog tambah / edit tugasan
+│           ├── QuickReportModal.tsx    # Dialog laporan teks pantas 1-klik
+│           ├── LogBlockerModal.tsx     # Dialog rekod halangan / risiko baharu
+│           ├── ExportEscalationModal.tsx# Dialog eksport ringkasan eskalasi Markdown
+│           ├── PlaybookModal.tsx       # Buku panduan SOP penyelesaian halangan
+│           └── StorageModal.tsx        # Pengurus sandaran data JSON & penetapan semula
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Panduan Memulakan Projek
 
-### Prerequisites
+### Keperluan Awal
 
-- [Node.js](https://nodejs.org/) (version 18 or later recommended)
-- `npm` or `bun`
+- [Node.js](https://nodejs.org/) (versi 18 ke atas disyorkan)
+- Pengurus pakej: `npm` atau `bun`
 
-### Installation
+### Pemasangan & Pelaksanaan
 
-1. **Clone the repository:**
+1. **Klon repositori ini:**
    ```bash
-   git clone https://github.com/your-username/wip-tracker.git
+   git clone https://github.com/amrifaizal/wip-tracker.git
    cd wip-tracker
    ```
 
-2. **Install dependencies:**
+2. **Pasang pakej dependensi:**
    ```bash
    npm install
    ```
 
-3. **Start the development server:**
+3. **Mulakan pelayan pembangunan tempatan (*Development Server*):**
    ```bash
    npm run dev
    ```
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
+   Buka [http://localhost:3000](http://localhost:3000) pada pelayar web anda.
 
-4. **Build for production:**
+4. **Bina projek untuk fasa produksi (*Production Build*):**
    ```bash
    npm run build
    ```
 
-5. **Run TypeScript lint checks:**
+5. **Jalankan semakan ralat TypeScript (*Linter*):**
    ```bash
    npm run lint
    ```
 
 ---
 
-## 📋 Evaluation & Testing Checklist (from PRD)
+## 📋 Senarai Semak Ujian & Penilaian (Berdasarkan PRD)
 
-| Ref | Test Scenario | Status |
+| Rujukan | Senario Ujian | Status |
 | :--- | :--- | :--- |
-| **TC01** | Create a deliverable with all valid fields and check dashboard display | ✅ Passed |
-| **TC02** | Attempt to save task without Job Name or Requester; verify inline validation error | ✅ Passed |
-| **TC03** | Generate report with active tasks; verify grouping by Completed, In Progress, Blocked | ✅ Passed |
-| **TC04** | Click "Copy to Clipboard" and verify clipboard content matches report text | ✅ Passed |
-| **TC05** | Refresh browser; verify browser storage retains all task records | ✅ Passed |
-| **TC06** | Switch sprint weeks and verify tasks are correctly partitioned | ✅ Passed |
+| **TC01** | Cipta tugasan dengan semua medan sah dan pastikan ia dipaparkan pada papan pemuka | ✅ Lulus |
+| **TC02** | Cuba simpan tugasan tanpa Nama Tugasan atau Pemohon; sahkan ralat pengesahan dipaparkan | ✅ Lulus |
+| **TC03** | Jana laporan dengan tugasan aktif; sahkan pengelompokan (Selesai, Sedang Berjalan, Terhalang) | ✅ Lulus |
+| **TC04** | Klik butang "Salin ke Papan Klip" dan sahkan kandungan teks sepadan dengan pratonton modal | ✅ Lulus |
+| **TC05** | Muat semula pelayar (*refresh*); sahkan storan tempatan mengekalkan semua rekod data | ✅ Lulus |
+| **TC06** | Tukar minggu sprint dan sahkan tugasan diasingkan mengikut minggu masing-masing | ✅ Lulus |
 
 ---
 
-## 📄 License
+## 📄 Lesen
 
-This project is licensed under the Apache 2.0 License - see the LICENSE file for details.
+Projek ini dilesenkan di bawah terma Lesen Apache 2.0. Sila rujuk fail LESEN untuk maklumat lanjut.
