@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
-import { SprintWeek } from '../types';
-import { Calendar, ChevronDown, Menu, User, Palette, LogIn, LogOut, Cloud, ShieldCheck } from 'lucide-react';
+import { SprintWeek, UserProfile } from '../types';
+import {
+  Calendar,
+  ChevronDown,
+  Menu,
+  Palette,
+  LogIn,
+  LogOut,
+  Cloud,
+  ShieldCheck,
+  Edit3
+} from 'lucide-react';
 import { User as FirebaseUser } from 'firebase/auth';
 
 interface HeaderProps {
@@ -14,6 +24,8 @@ interface HeaderProps {
   onSignIn: () => void;
   onSignOut: () => void;
   isSyncing: boolean;
+  userProfile: UserProfile;
+  onOpenEditProfile: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -26,9 +38,27 @@ export const Header: React.FC<HeaderProps> = ({
   user,
   onSignIn,
   onSignOut,
-  isSyncing
+  isSyncing,
+  userProfile,
+  onOpenEditProfile
 }) => {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  // Active display name and email prioritizing Google Auth, falling back to local userProfile
+  const activeDisplayName = user?.displayName || userProfile.name || 'Amri Faizal';
+  const activeEmail = user?.email || userProfile.email || 'amri.faizal@bigtree.com.my';
+  const activePhoto = user?.photoURL || userProfile.avatarUrl;
+
+  // Generate initials (e.g., "Amri Faizal" -> "AF")
+  const getInitials = (nameStr: string) => {
+    const parts = nameStr.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return nameStr.slice(0, 2).toUpperCase() || 'AF';
+  };
+
+  const initials = getInitials(activeDisplayName);
 
   const primaryBtnClass =
     themeColor === 'indigo'
@@ -71,9 +101,11 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 v2.4
               </span>
-              <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-100/70 text-amber-800 text-[10px] font-mono font-semibold">
-                🔥 Firebase
-              </span>
+              {user && (
+                <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-mono font-semibold">
+                  🔥 Cloud
+                </span>
+              )}
             </div>
             <span className="text-[11px] text-[#404a3a] leading-tight hidden sm:inline-block font-medium">
               Weekly Deliverables & Meeting Dispatch
@@ -143,72 +175,119 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="text-[11px] font-mono hidden xl:inline capitalize">{themeColor}</span>
         </button>
 
-        {/* User Account / Google Sign-In */}
-        {user ? (
-          <div className="relative">
-            <button
-              onClick={() => setShowProfileMenu(!showProfileMenu)}
-              className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-[#218300]/40 transition-all"
-              type="button"
-            >
-              {user.photoURL ? (
-                <img
-                  src={user.photoURL}
-                  alt={user.displayName || 'User Avatar'}
-                  className="w-8 h-8 rounded-full object-cover border border-[#e5e1e7]"
-                />
-              ) : (
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-[13px] shadow-sm text-white ${
-                    themeColor === 'indigo' ? 'bg-[#4f46e5]' : 'bg-[#218300]'
-                  }`}
-                >
-                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
-                </div>
-              )}
-            </button>
+        {/* PROMINENT USER NAME DISPLAY & PROFILE PILL */}
+        <div className="relative">
+          <button
+            onClick={() => setShowProfileMenu(!showProfileMenu)}
+            className="flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full bg-[#f6f2f8] border border-[#e5e1e7] hover:border-[#218300]/40 hover:bg-[#efeaf2] transition-all shadow-xs"
+            type="button"
+            title="Profil Pengguna & Tetapan Akaun"
+          >
+            {/* Avatar image or Initials badge */}
+            {activePhoto ? (
+              <img
+                src={activePhoto}
+                alt={activeDisplayName}
+                className="w-7 h-7 rounded-full object-cover border border-[#e5e1e7]"
+              />
+            ) : (
+              <div
+                className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[11px] text-white shadow-xs ${
+                  themeColor === 'indigo' ? 'bg-[#4f46e5]' : 'bg-[#218300]'
+                }`}
+              >
+                {initials}
+              </div>
+            )}
 
-            {/* Profile Dropdown */}
-            {showProfileMenu && (
-              <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-[#e5e1e7] py-2 z-50 animate-in fade-in zoom-in-95">
-                <div className="px-4 py-2 border-b border-[#e5e1e7]">
-                  <p className="text-[13px] font-bold text-[#1c1b1f] truncate">
-                    {user.displayName || 'Solo Workspace'}
-                  </p>
-                  <p className="text-[11px] text-[#404a3a] truncate">{user.email}</p>
-                  <div className="flex items-center gap-1 mt-1 text-[10px] text-[#186700] font-medium">
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>Connected to Firestore</span>
+            {/* User Name & Role (Visible in Header!) */}
+            <div className="flex flex-col text-left">
+              <span className="text-[12px] font-bold text-[#1c1b1f] leading-tight truncate max-w-[120px] sm:max-w-[160px]">
+                {activeDisplayName}
+              </span>
+              <span className="text-[10px] text-[#556050] leading-none truncate max-w-[120px] sm:max-w-[160px] hidden sm:inline">
+                {user ? 'Google Account' : userProfile.role || 'Senior Product Designer'}
+              </span>
+            </div>
+
+            <ChevronDown className="w-3.5 h-3.5 text-[#556050] ml-0.5" />
+          </button>
+
+          {/* User Profile Dropdown Menu */}
+          {showProfileMenu && (
+            <div className="absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-[#e5e1e7] py-2.5 z-50 animate-in fade-in zoom-in-95">
+              {/* Profile Card Summary */}
+              <div className="px-4 py-3 border-b border-[#e5e1e7] bg-[#fcf8fe]/60">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm text-white shadow-xs shrink-0 ${
+                      themeColor === 'indigo' ? 'bg-[#4f46e5]' : 'bg-[#218300]'
+                    }`}
+                  >
+                    {initials}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-bold text-[#1c1b1f] truncate">
+                      {activeDisplayName}
+                    </p>
+                    <p className="text-[11px] text-[#556050] truncate">{activeEmail}</p>
+                    <span className="inline-block mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#e5e1e7] text-[#404a3a]">
+                      {userProfile.role}
+                    </span>
                   </div>
                 </div>
 
-                <div className="px-2 pt-1">
+                <div className="mt-2.5 flex items-center gap-1.5 text-[11px] text-[#186700] font-medium bg-emerald-50 px-2.5 py-1 rounded-lg">
+                  <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                  <span>{user ? 'Disegerakkan dengan Firebase Cloud' : 'Storan Tempatan (Offline-First)'}</span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="px-2 pt-2 flex flex-col gap-1">
+                {/* Edit Profile / Name */}
+                <button
+                  onClick={() => {
+                    setShowProfileMenu(false);
+                    onOpenEditProfile();
+                  }}
+                  type="button"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 text-[12px] font-medium text-[#1c1b1f] hover:bg-[#f6f2f8] rounded-xl transition-colors text-left"
+                >
+                  <Edit3 className="w-4 h-4 text-[#556050]" />
+                  <span>Kemaskini Nama & Jawatan</span>
+                </button>
+
+                {/* Google Sign In / Sign Out */}
+                {user ? (
                   <button
                     onClick={() => {
                       setShowProfileMenu(false);
                       onSignOut();
                     }}
                     type="button"
-                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium text-[#ba1a1a] hover:bg-[#ffdad6]/40 rounded-lg transition-colors"
+                    className="w-full flex items-center gap-2.5 px-3 py-2 text-[12px] font-medium text-[#ba1a1a] hover:bg-[#ffdad6]/40 rounded-xl transition-colors text-left"
                   >
                     <LogOut className="w-4 h-4" />
-                    <span>Log Out</span>
+                    <span>Log Keluar dari Firebase</span>
                   </button>
-                </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      onSignIn();
+                    }}
+                    type="button"
+                    className={`w-full flex items-center justify-center gap-2 px-3 py-2 text-[12px] font-semibold ${primaryBtnClass} rounded-xl shadow-xs transition-all mt-1`}
+                  >
+                    <LogIn className="w-4 h-4" />
+                    <span>Log Masuk dengan Google</span>
+                  </button>
+                )}
               </div>
-            )}
-          </div>
-        ) : (
-          <button
-            onClick={onSignIn}
-            type="button"
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${primaryBtnClass} text-[12px] font-semibold transition-all shadow-xs active:scale-95`}
-          >
-            <LogIn className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Sign In with Google</span>
-            <span className="sm:hidden">Sign In</span>
-          </button>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { WorkspaceView } from '../types';
+import { WorkspaceView, UserProfile } from '../types';
 import {
   CheckSquare,
   FileText,
@@ -21,6 +21,9 @@ interface SidebarProps {
   themeColor: 'green' | 'indigo';
   blockerCount: number;
   isCloudConnected?: boolean;
+  userProfile?: UserProfile;
+  userPhoto?: string;
+  onOpenEditProfile?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -32,7 +35,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onCloseMobile,
   themeColor,
   blockerCount,
-  isCloudConnected = false
+  isCloudConnected = false,
+  userProfile = {
+    name: 'Amri Faizal',
+    email: 'amri.faizal@bigtree.com.my',
+    role: 'Senior Product Designer'
+  },
+  userPhoto,
+  onOpenEditProfile
 }) => {
   const navItems = [
     {
@@ -67,6 +77,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ? 'bg-[#4f46e5] text-white shadow-sm'
       : 'bg-[#218300] text-white shadow-sm';
 
+  const getInitials = (nameStr: string) => {
+    const parts = nameStr.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return nameStr.slice(0, 2).toUpperCase() || 'AF';
+  };
+
+  const initials = getInitials(userProfile.name);
+
   return (
     <>
       {/* Mobile backdrop */}
@@ -96,7 +116,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          <div className="px-2 py-1 text-[#404a3a] text-[11px] font-semibold uppercase tracking-wider hidden md:block">
+          {/* User Workspace Profile Card */}
+          <div
+            onClick={onOpenEditProfile}
+            className="mb-1 p-2.5 rounded-xl bg-gradient-to-br from-[#f8f5fa] to-[#edf7ee] border border-[#e5e1e7] hover:border-[#218300]/40 transition-all cursor-pointer group shadow-xs"
+            title="Klik untuk kemaskini nama & profil pengguna"
+          >
+            <div className="flex items-center gap-2.5">
+              {userPhoto ? (
+                <img
+                  src={userPhoto}
+                  alt={userProfile.name}
+                  className="w-9 h-9 rounded-full object-cover border border-[#e5e1e7] shrink-0"
+                />
+              ) : (
+                <div
+                  className={`w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs text-white shrink-0 shadow-xs ${
+                    themeColor === 'indigo' ? 'bg-[#4f46e5]' : 'bg-[#218300]'
+                  }`}
+                >
+                  {initials}
+                </div>
+              )}
+              <div className="flex flex-col min-w-0 flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[13px] font-bold text-[#1c1b1f] truncate leading-tight group-hover:text-[#218300] transition-colors">
+                    {userProfile.name}
+                  </span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" title="Aktif" />
+                </div>
+                <span className="text-[10px] text-[#556050] truncate font-medium">
+                  {userProfile.role}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="px-2 pt-1 text-[#404a3a] text-[11px] font-semibold uppercase tracking-wider hidden md:block">
             Workspace Views
           </div>
 

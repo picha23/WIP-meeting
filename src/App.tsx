@@ -5,7 +5,8 @@ import {
   BlockerIncident,
   GeneratedReportHistory,
   WorkspaceView,
-  TaskStatus
+  TaskStatus,
+  UserProfile
 } from './types';
 import {
   loadTasksFromStorage,
@@ -21,6 +22,8 @@ import {
   getThemeColor,
   setThemeColor,
   getEstimatedStorageSize,
+  loadUserProfile,
+  saveUserProfile,
   INITIAL_TASKS,
   INITIAL_WEEKS,
   INITIAL_BLOCKERS,
@@ -52,6 +55,7 @@ import { LogBlockerModal } from './components/modals/LogBlockerModal';
 import { ExportEscalationModal } from './components/modals/ExportEscalationModal';
 import { PlaybookModal } from './components/modals/PlaybookModal';
 import { StorageModal } from './components/modals/StorageModal';
+import { EditProfileModal } from './components/modals/EditProfileModal';
 import { Toast } from './components/Toast';
 
 export default function App() {
@@ -71,6 +75,10 @@ export default function App() {
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
   const userRef = useRef<FirebaseUser | null>(null);
   userRef.current = user;
+
+  // User Profile State (Default Amri Faizal)
+  const [userProfile, setUserProfile] = useState<UserProfile>(loadUserProfile);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
 
   // Modals State
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -133,11 +141,23 @@ export default function App() {
       if (currentUser) {
         setIsSyncing(true);
         try {
+          // Update local userProfile with Google credentials if available
+          setUserProfile((prev) => {
+            const updated: UserProfile = {
+              name: currentUser.displayName || prev.name || 'Amri Faizal',
+              email: currentUser.email || prev.email || 'amri.faizal@bigtree.com.my',
+              role: prev.role || 'Senior Product Designer',
+              avatarUrl: currentUser.photoURL || prev.avatarUrl
+            };
+            saveUserProfile(updated);
+            return updated;
+          });
+
           await ensureUserProfile({
             uid: currentUser.uid,
             email: currentUser.email,
-            displayName: currentUser.displayName,
-            photoURL: currentUser.photoURL
+            displayName: currentUser.displayName || userProfile.name || 'Amri Faizal',
+            photoURL: currentUser.photoURL || userProfile.avatarUrl || null
           });
 
           // Seed cloud data if user's cloud account is empty
@@ -261,6 +281,13 @@ export default function App() {
       console.error('Sign out error:', err);
       showToast('Ralat', 'Gagal log keluar.', 'warning');
     }
+  };
+
+  // Save / Update User Profile
+  const handleSaveProfile = (newProfile: UserProfile) => {
+    setUserProfile(newProfile);
+    saveUserProfile(newProfile);
+    showToast('Profil Disimpan', `Nama pengguna berjaya dikemaskini kepada "${newProfile.name}".`);
   };
 
   // Change Active Sprint Week
@@ -544,6 +571,8 @@ export default function App() {
         onSignIn={handleSignIn}
         onSignOut={handleSignOut}
         isSyncing={isSyncing}
+        userProfile={userProfile}
+        onOpenEditProfile={() => setIsEditProfileOpen(true)}
       />
 
       {/* Left Sidebar */}
@@ -557,6 +586,9 @@ export default function App() {
         themeColor={themeColor}
         blockerCount={activeBlockersCount}
         isCloudConnected={Boolean(user)}
+        userProfile={userProfile}
+        userPhoto={user?.photoURL || userProfile.avatarUrl}
+        onOpenEditProfile={() => setIsEditProfileOpen(true)}
       />
 
       {/* Main Viewport Content */}
@@ -580,6 +612,7 @@ export default function App() {
               onCycleStatus={handleCycleStatus}
               onGenerateReport={() => setIsQuickReportOpen(true)}
               themeColor={themeColor}
+              userName={user?.displayName || userProfile.name}
             />
           )}
 
@@ -593,6 +626,7 @@ export default function App() {
               onSaveHistory={handleSaveReportHistory}
               onShowToast={showToast}
               themeColor={themeColor}
+              userName={user?.displayName || userProfile.name}
             />
           )}
 
@@ -673,6 +707,14 @@ export default function App() {
         storageUsage={storageUsage}
         onReset={handleResetData}
         onShowToast={showToast}
+        themeColor={themeColor}
+      />
+
+      <EditProfileModal
+        isOpen={isEditProfileOpen}
+        onClose={() => setIsEditProfileOpen(false)}
+        currentProfile={userProfile}
+        onSaveProfile={handleSaveProfile}
         themeColor={themeColor}
       />
     </div>

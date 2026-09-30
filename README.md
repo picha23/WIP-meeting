@@ -47,6 +47,11 @@ Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional 
   - Peraturan keselamatan Firestore (*firestore.rules*) yang teguh dengan pengesanan pemilikan pengguna (`isSignedIn()`, `isOwner()`, `isValidUserDoc()`).
   - Peralihan automatik: Berfungsi luar talian sepenuhnya melalui storan tempatan (*Offline-First*) apabila belum log masuk atau terputus sambungan, dan bersinkron segera apabila log masuk.
 
+- **👤 Pengurusan Profil & Identiti Pengguna**:
+  - Memaparkan nama pengguna (**Amri Faizal**), jawatan (*Senior Product Designer*), dan avatar aktif secara jelas di bahagian bar navigasi atas (*Header*) dan bar sisi (*Sidebar*).
+  - Dialog interaktif **Kemaskini Nama & Profil** untuk menukar nama, emel, dan jawatan ruang kerja pada bila-bila masa.
+  - Nama pengguna dipautkan secara automatik ke papan pemuka tugasan mingguan dan penjana laporan mesyuarat (*Report Generator*).
+
 - **💾 Enjin Storan Tempatan Luar Talian (*Offline-First*)**:
   - Menyimpan data secara automatik dalam pelayar melalui `localStorage` / IndexedDB.
   - Pengurus Storan membolehkan sandaran penuh (*backup JSON*) dieksport atau data ditetapkan semula ke sampel asal.

@@ -1,4 +1,4 @@
-import { TaskItem, SprintWeek, BlockerIncident, GeneratedReportHistory } from '../types';
+import { TaskItem, SprintWeek, BlockerIncident, GeneratedReportHistory, UserProfile } from '../types';
 
 const STORAGE_KEYS = {
   TASKS: 'wip_tracker_tasks_v2',
@@ -6,7 +6,14 @@ const STORAGE_KEYS = {
   BLOCKERS: 'wip_tracker_blockers_v2',
   REPORT_HISTORY: 'wip_tracker_report_history_v2',
   ACTIVE_WEEK: 'wip_tracker_active_week_v2',
-  THEME_COLOR: 'wip_tracker_theme_color_v2'
+  THEME_COLOR: 'wip_tracker_theme_color_v2',
+  USER_PROFILE: 'wip_tracker_user_profile_v2'
+};
+
+export const DEFAULT_USER: UserProfile = {
+  name: 'Amri Faizal',
+  email: 'amri.faizal@bigtree.com.my',
+  role: 'Senior Product Designer'
 };
 
 export const INITIAL_WEEKS: SprintWeek[] = [
@@ -498,10 +505,29 @@ export function getEstimatedStorageSize(): string {
   }
 }
 
+export function loadUserProfile(): UserProfile {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
+    if (!raw) return DEFAULT_USER;
+    return { ...DEFAULT_USER, ...JSON.parse(raw) };
+  } catch (e) {
+    return DEFAULT_USER;
+  }
+}
+
+export function saveUserProfile(profile: UserProfile): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.USER_PROFILE, JSON.stringify(profile));
+  } catch (e) {
+    console.error('Failed to save user profile:', e);
+  }
+}
+
 export function resetAllDataToDefault() {
   localStorage.removeItem(STORAGE_KEYS.TASKS);
   localStorage.removeItem(STORAGE_KEYS.WEEKS);
   localStorage.removeItem(STORAGE_KEYS.BLOCKERS);
   localStorage.removeItem(STORAGE_KEYS.REPORT_HISTORY);
   localStorage.removeItem(STORAGE_KEYS.ACTIVE_WEEK);
+  localStorage.removeItem(STORAGE_KEYS.USER_PROFILE);
 }

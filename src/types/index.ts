@@ -76,4 +76,11 @@ export interface GeneratedReportHistory {
   preview: string;
 }
 
+export interface UserProfile {
+  name: string;
+  email: string;
+  role: string;
+  avatarUrl?: string;
+}
+
 export type WorkspaceView = 'weekly-deliverables' | 'report-generator' | 'weekly-sprints-archive' | 'blockers-and-risks';

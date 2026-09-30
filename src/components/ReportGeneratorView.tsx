@@ -26,6 +26,7 @@ interface ReportGeneratorViewProps {
   onSaveHistory: (report: GeneratedReportHistory) => void;
   onShowToast: (title: string, message: string) => void;
   themeColor: 'green' | 'indigo';
+  userName?: string;
 }
 
 export const ReportGeneratorView: React.FC<ReportGeneratorViewProps> = ({
@@ -37,6 +38,7 @@ export const ReportGeneratorView: React.FC<ReportGeneratorViewProps> = ({
   onSaveHistory,
   onShowToast,
   themeColor,
+  userName = 'Amri Faizal'
 }) => {
   const [config, setConfig] = useState<ReportConfig>({
     preset: 'standard',
@@ -180,12 +182,15 @@ export const ReportGeneratorView: React.FC<ReportGeneratorViewProps> = ({
       {/* Top Action Ribbon & View Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-white p-6 rounded-xl border border-[#e5e1e7] shadow-xs relative overflow-hidden">
         <div className="flex flex-col gap-1 min-w-0 z-10">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="px-2 py-0.5 rounded-full bg-[#186700]/15 text-[#186700] text-[10px] font-mono uppercase font-bold tracking-wider">
               Engine: Markdown v3.2
             </span>
             <span className="text-[#404a3a] text-[11px] font-mono tracking-tight">
               • Live Sync Armed
+            </span>
+            <span className="px-2 py-0.5 rounded-md bg-[#eef7ee] text-[#186700] text-[11px] font-semibold">
+              👤 Disediakan oleh: {userName}
             </span>
           </div>
           <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-[#1c1b1f]">

@@ -25,6 +25,7 @@ interface WeeklyDeliverablesViewProps {
   onCycleStatus: (task: TaskItem) => void;
   onGenerateReport: () => void;
   themeColor: 'green' | 'indigo';
+  userName?: string;
 }
 
 export const WeeklyDeliverablesView: React.FC<WeeklyDeliverablesViewProps> = ({
@@ -38,6 +39,7 @@ export const WeeklyDeliverablesView: React.FC<WeeklyDeliverablesViewProps> = ({
   onCycleStatus,
   onGenerateReport,
   themeColor,
+  userName = 'Amri Faizal'
 }) => {
   const [filter, setFilter] = useState<'all' | TaskStatus>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -92,9 +94,13 @@ export const WeeklyDeliverablesView: React.FC<WeeklyDeliverablesViewProps> = ({
                 {currentWeek.status === 'active' ? 'Sprint Active' : 'Sprint Closed'}
               </span>
             </div>
-            <p className="text-[14px] text-[#404a3a]">
-              Track deliverables, unblock team dependencies, and export formatted standup digests.
-            </p>
+            <div className="flex flex-wrap items-center gap-2 text-[13px] text-[#404a3a]">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#eef7ee] text-[#186700] font-semibold text-[12px]">
+                👤 Ruang Kerja: {userName}
+              </span>
+              <span className="text-[#bfcab5] hidden sm:inline">•</span>
+              <span>Pantau tugasan mingguan, halangan pasukan, dan jana laporan standup.</span>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
