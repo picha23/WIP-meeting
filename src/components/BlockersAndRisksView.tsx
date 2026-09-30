@@ -80,10 +80,10 @@ export const BlockersAndRisksView: React.FC<BlockersAndRisksViewProps> = ({
             <span className="text-[#ba1a1a] font-semibold">Incident Resolution Center</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-[#1c1b1f] tracking-tight">
-            Blockers & Risks Tracker
+            Pending & Risks Tracker
           </h1>
           <p className="text-[14px] text-[#404a3a] max-w-2xl leading-relaxed">
-            Triage impediments, escalate dependencies, and document resolution pathways for continuous velocity and executive transparency.
+            Triage pending items, escalate dependencies, and document resolution pathways for continuous velocity and executive transparency.
           </p>
         </div>
 
@@ -103,7 +103,7 @@ export const BlockersAndRisksView: React.FC<BlockersAndRisksViewProps> = ({
             className={`inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-lg ${primaryBtnClass} text-[13px] font-semibold transition-all shadow-xs active:scale-98`}
           >
             <PlusCircle className="w-4 h-4" />
-            <span>+ Log New Blocker / Risk</span>
+            <span>+ Log New Pending / Risk</span>
           </button>
         </div>
       </div>

@@ -344,7 +344,7 @@ export const WeeklySprintsArchiveView: React.FC<WeeklySprintsArchiveViewProps> =
                       </div>
                       <span className="text-[11px] text-[#404a3a]">
                         {week.reviewers ||
-                          `Closed by ${week.closedBy || 'Senior Product Designer'} • ${
+                          `Closed by ${week.closedBy || 'Senior Graphic Designer'} • ${
                             week.syncAgo || 'Archived'
                           }`}
                       </span>
@@ -488,7 +488,7 @@ export const WeeklySprintsArchiveView: React.FC<WeeklySprintsArchiveViewProps> =
               </p>
               <div className="flex items-center justify-between text-[11px] text-[#404a3a] pt-1">
                 <span className="font-semibold text-[#1c1b1f]">
-                  {inspectedWeek.closedBy || 'Senior Product Designer'}
+                  {inspectedWeek.closedBy || 'Senior Graphic Designer'}
                 </span>
                 <span className="font-mono">{inspectedWeek.dateRange}</span>
               </div>

@@ -38,7 +38,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     onSaveProfile({
       name: name.trim(),
       email: email.trim(),
-      role: role.trim() || 'Senior Product Designer',
+      role: role.trim() || 'Senior Graphic Designer',
       avatarUrl: currentProfile.avatarUrl
     });
     onClose();
@@ -125,7 +125,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
                 type="text"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                placeholder="Contoh: Senior Product Designer"
+                placeholder="Contoh: Senior Graphic Designer"
                 className="w-full pl-9 pr-3.5 py-2 text-[13px] rounded-xl border border-[#e5e1e7] focus:outline-none focus:border-[#218300] focus:ring-1 focus:ring-[#218300]"
               />
             </div>

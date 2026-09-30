@@ -39,7 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   userProfile = {
     name: 'Amri Faizal',
     email: 'amri.faizal@bigtree.com.my',
-    role: 'Senior Product Designer'
+    role: 'Senior Graphic Designer'
   },
   userPhoto,
   onOpenEditProfile
@@ -65,7 +65,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     {
       id: 'blockers-and-risks' as WorkspaceView,
-      label: 'Blockers & Risks',
+      label: 'Pending',
       icon: AlertTriangle,
       badge: blockerCount > 0 ? `${blockerCount}` : null,
       badgeError: true

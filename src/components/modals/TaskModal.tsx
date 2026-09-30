@@ -183,9 +183,9 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 onChange={(e) => setStatus(e.target.value as TaskStatus)}
                 className="w-full px-3 py-2 rounded-lg bg-[#fcf8fe] text-[13px] text-[#1c1b1f] border border-[#e5e1e7] focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#218300] shadow-xs cursor-pointer"
               >
-                <option value="In Progress">⏳ In Progress</option>
+                <option value="In Progress">⚡ In Progress</option>
                 <option value="Completed">✅ Completed</option>
-                <option value="Blocked">🚫 Blocked / Impeded</option>
+                <option value="Blocked">⏳ Pending</option>
               </select>
             </div>
 
@@ -204,25 +204,25 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             </div>
           </div>
 
-          {/* Issues / Blockers Note */}
+          {/* Issues / Pending Note */}
           <div className="flex flex-col gap-1">
             <div className="flex items-center justify-between">
               <label className="text-[13px] font-semibold text-[#1c1b1f]" htmlFor="issues">
-                Issues & Blockers Note
+                Issues & Pending Note
               </label>
               <span
                 className={`text-[11px] font-medium ${
-                  status === 'Blocked' ? 'text-[#ba1a1a]' : 'text-[#404a3a]'
+                  status === 'Blocked' || status === 'Pending' ? 'text-amber-800' : 'text-[#404a3a]'
                 }`}
               >
-                {status === 'Blocked' ? 'Recommended - Explain dependency issue' : 'Optional'}
+                {status === 'Blocked' || status === 'Pending' ? 'Recommended - Explain pending reason' : 'Optional'}
               </span>
             </div>
             <textarea
               id="issues"
               value={issue}
               onChange={(e) => setIssue(e.target.value)}
-              placeholder="Detail any blockers, dependency delays, or missing assets..."
+              placeholder="Detail any pending dependencies, waiting reviews, or missing assets..."
               rows={3}
               className={`w-full px-3 py-2 rounded-lg bg-[#fcf8fe] text-[13px] text-[#1c1b1f] placeholder-[#404a3a]/60 border focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#218300] shadow-xs resize-none ${
                 status === 'Blocked' ? 'border-[#ffdad6] bg-[#ffdad6]/10' : 'border-[#e5e1e7]'

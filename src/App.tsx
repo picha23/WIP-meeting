@@ -146,7 +146,7 @@ export default function App() {
             const updated: UserProfile = {
               name: currentUser.displayName || prev.name || 'Amri Faizal',
               email: currentUser.email || prev.email || 'amri.faizal@bigtree.com.my',
-              role: prev.role || 'Senior Product Designer',
+              role: prev.role === 'Senior Product Designer' || !prev.role ? 'Senior Graphic Designer' : prev.role,
               avatarUrl: currentUser.photoURL || prev.avatarUrl
             };
             saveUserProfile(updated);
@@ -427,7 +427,7 @@ export default function App() {
     const updated = tasks.map((t) => (t.id === task.id ? updatedTask : t));
     setTasks(updated);
     saveTasksToStorage(updated);
-    showToast('Status Dikemas Kini', `"${task.jobName}" ditandakan sebagai ${nextStatus}.`);
+    showToast('Status Dikemas Kini', `"${task.jobName}" ditandakan sebagai ${nextStatus === 'Blocked' ? 'Pending' : nextStatus}.`);
 
     if (userRef.current) {
       try {

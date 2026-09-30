@@ -7,7 +7,7 @@
 [![Vite](https://img.shields.io/badge/Vite-8.x-646cff.svg?style=flat&logo=vite)](https://vitejs.dev/)
 [![Lesen: Apache-2.0](https://img.shields.io/badge/Lesen-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional solo, ketua pereka produk (*Senior Product Designer*), ketua teknikal, dan pengurus projek. **WIP Tracker** memudahkan penjejakan tugasan mingguan, eskalasi halangan (*blockers*), arkib retrospektif sprint, dan penjanaan laporan mesyuarat Work-In-Progress (WIP) serta sesi *standup* secara berformat dalam 1-klik, kini disokong oleh pangkalan data awan **Firebase Firestore & Pengesahan Google**.
+Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional solo, pereka grafik kanan (*Senior Graphic Designer*), ketua teknikal, dan pengurus projek. **WIP Tracker** memudahkan penjejakan tugasan mingguan, eskalasi halangan (*blockers*), arkib retrospektif sprint, dan penjanaan laporan mesyuarat Work-In-Progress (WIP) serta sesi *standup* secara berformat dalam 1-klik, kini disokong oleh pangkalan data awan **Firebase Firestore & Pengesahan Google**.
 
 ---
 
@@ -15,10 +15,10 @@ Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional 
 
 | Paparan | Tujuan & Keupayaan Utama |
 | :--- | :--- |
-| **Tugasan Mingguan (*Weekly Deliverables*)** | Papan pemuka sprint aktif dengan matrik KPI masa nyata, penapisan carian pantas, kitaran status tugasan (`Sedang Berjalan` ⇄ `Selesai` ⇄ `Terhalang`), dan borang kemasukan/pengeditan segera. |
+| **Tugasan Mingguan (*Weekly Deliverables*)** | Papan pemuka sprint aktif dengan matrik KPI masa nyata, penapisan carian pantas, kitaran status tugasan (`Sedang Berjalan` ⇄ `Selesai` ⇄ `Pending`), dan borang kemasukan/pengeditan segera. |
 | **Penjana Laporan (*Report Generator*)** | Kompiler laporan Markdown masa nyata dengan pratetap (*Format Standard WIP*, *Poin Eksekutif*, *Format Slack/Discord*, *Ringkasan Pelanggan*), togol kandungan modular, dan salin ke papan klip dalam 1-klik. |
 | **Arkib Sprint Mingguan (*Sprints Archive*)** | Lejar sprint bersejarah merentasi suku tahun (Q3 / Q4), carta mikro halaju 6 minggu lepas, nota retrospektif sprint, dan analitik sumbangan pemegang taruh (*stakeholders*). |
-| **Penjejak Halangan & Risiko (*Blockers & Risks*)** | Pusat penyelesaian insiden untuk menjejak punca masalah teknikal, pihak bertanggungjawab, SLA penyelesaian (beserta carta *sparkline*), dan buku panduan SOP eskalasi. |
+| **Penjejak Pending & Risiko (*Pending & Risks Tracker*)** | Pusat penyelesaian insiden untuk menjejak tugasan pending, punca masalah teknikal, pihak bertanggungjawab, SLA penyelesaian (beserta carta *sparkline*), dan buku panduan SOP eskalasi. |
 
 ---
 
@@ -27,16 +27,16 @@ Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional 
 - **⚡ Penjana Laporan Mesyuarat 1-Klik**:
   - Menyusun tugasan aktif secara automatik ke dalam teks berstruktur sedia bentang.
   - Pilihan nada penyampaian: *Eksekutif / Ringkas*, *Teknikal / Terperinci*, dan *Santai / Standup*.
-  - Togol modular: *Paparkan Halangan Di Atas*, *Sertakan Nama Pemohon/Ketua*, *Sertakan Sasaran ETA & Langkah Seterusnya*, serta *Lencana Matrik Halaju*.
+  - Togol modular: *Paparkan Tugasan Pending Di Atas*, *Sertakan Nama Pemohon/Ketua*, *Sertakan Sasaran ETA & Langkah Seterusnya*, serta *Lencana Matrik Halaju*.
   - Eksport terus ke **Papan Klip (*Clipboard*)**, **Format Slack**, **Fail Markdown (`.md`)**, dan **Teks Biasa (`.txt`)**.
   - Sejarah sesi tempatan untuk menyalin semula laporan lepas dengan serta-merta.
 
 - **📊 Metrik & KPI Sprint Menyeluruh**:
-  - Pengiraan langsung untuk Jumlah Tugasan, Sedang Berjalan, Selesai, dan Halangan & Risiko.
+  - Pengiraan langsung untuk Jumlah Tugasan, Sedang Berjalan, Selesai, dan **Pending**.
   - Bar kemajuan beranimasi dan cincin peratusan halaju visual.
 
-- **🚫 Pengurusan Insiden & Halangan Berisiko**:
-  - Pengkategorian keterukan (*Halangan Kritikal*, *Berisiko / Menunggu Dependensi*, *Telah Selesai*).
+- **🚫 Pengurusan Insiden, Pending & Risiko**:
+  - Pengkategorian keterukan (*Critical Pending*, *Berisiko / Menunggu Dependensi*, *Telah Selesai*).
   - Penjejakan SLA dengan purata tempoh penyelesaian dan visualisasi *sparkline*.
   - Panduan SOP (Prosedur Operasi Standard) eskalasi bertempoh masa (&lt;24j, &gt;24j, &gt;48j).
 
@@ -48,7 +48,7 @@ Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional 
   - Peralihan automatik: Berfungsi luar talian sepenuhnya melalui storan tempatan (*Offline-First*) apabila belum log masuk atau terputus sambungan, dan bersinkron segera apabila log masuk.
 
 - **👤 Pengurusan Profil & Identiti Pengguna**:
-  - Memaparkan nama pengguna (**Amri Faizal**), jawatan (*Senior Product Designer*), dan avatar aktif secara jelas di bahagian bar navigasi atas (*Header*) dan bar sisi (*Sidebar*).
+  - Memaparkan nama pengguna (**Amri Faizal**), jawatan (*Senior Graphic Designer*), dan avatar aktif secara jelas di bahagian bar navigasi atas (*Header*) dan bar sisi (*Sidebar*).
   - Dialog interaktif **Kemaskini Nama & Profil** untuk menukar nama, emel, dan jawatan ruang kerja pada bila-bila masa.
   - Nama pengguna dipautkan secara automatik ke papan pemuka tugasan mingguan dan penjana laporan mesyuarat (*Report Generator*).
 
@@ -103,6 +103,7 @@ wip-tracker/
 │       ├── Toast.tsx                   # Notifikasi maklum balas pantas
 │       └── modals/
 │           ├── TaskModal.tsx           # Dialog tambah / edit tugasan
+│           ├── EditProfileModal.tsx    # Dialog kemaskini nama pengguna, jawatan & maklumat profil
 │           ├── QuickReportModal.tsx    # Dialog laporan teks pantas 1-klik
 │           ├── LogBlockerModal.tsx     # Dialog rekod halangan / risiko baharu
 │           ├── ExportEscalationModal.tsx# Dialog eksport ringkasan eskalasi Markdown
@@ -118,6 +119,7 @@ wip-tracker/
 
 - [Node.js](https://nodejs.org/) (versi 18 ke atas disyorkan)
 - Pengurus pakej: `npm` atau `bun`
+- Akaun [GitHub](https://github.com/) dan Git dipasang pada komputer
 
 ### Pemasangan & Pelaksanaan
 
@@ -150,23 +152,42 @@ wip-tracker/
 
 ---
 
-## 📤 Arahan Push ke GitHub
+## 📤 Arahan Lengkap Push ke GitHub
 
-Sekiranya anda membuat klon atau menggunakan repositori Git tempatan, jalankan arahan berikut di terminal untuk menghantar kemas kini terkini ke GitHub:
+Ikuti panduan di bawah untuk memuat naik atau mengemas kini kod sumber serta fail `README.md` ini ke GitHub:
+
+### Situasi A: Repositori Baru (Pertama Kali Sambung ke GitHub)
+Sekiranya anda baru mencipta repositori kosong di GitHub (contohnya `wip-tracker`):
 
 ```bash
-# 1. Semak fail yang telah diubah
+# 1. Pastikan cawangan utama dinamakan 'main'
+git branch -M main
+
+# 2. Sambungkan ke repositori GitHub anda (gantikan URL dengan repositori anda)
+git remote add origin https://github.com/<username>/wip-tracker.git
+
+# 3. Hantar kod dan fail README ke GitHub
+git push -u origin main
+```
+
+### Situasi B: Mengemas kini Repositori Sedia Ada (Update README & Kod Terkini)
+Sekiranya repositori telah bersambung dengan GitHub dan anda ingin menolak komit terbaharu:
+
+```bash
+# 1. Semak status perubahan fail
 git status
 
-# 2. Tambah semua fail kemas kini termasuk README.md dan kod sumber
+# 2. Tambah semua fail kemas kini ke staging
 git add .
 
-# 3. Buat komit dengan mesej yang jelas
-git commit -m "docs: kemas kini README.md dengan integrasi Firebase dan panduan lengkap"
+# 3. Buat komit dengan nota perubahan
+git commit -m "docs: kemas kini README.md dengan maklumat profil pengguna dan arahan GitHub lengkap"
 
-# 4. Hantar perubahan ke cawangan utama di GitHub
+# 4. Hantar perubahan ke GitHub
 git push origin main
 ```
+
+> 💡 **Nota Pengesahan GitHub**: Sekiranya terminal meminta kata laluan semasa arahan `git push`, gunakan **GitHub Personal Access Token (PAT)** dengan skop `repo` atau gunakan sambungan kunci **SSH** (`git@github.com:<username>/wip-tracker.git`).
 
 ---
 

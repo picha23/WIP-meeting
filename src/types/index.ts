@@ -1,4 +1,4 @@
-export type TaskStatus = 'In Progress' | 'Completed' | 'Blocked';
+export type TaskStatus = 'In Progress' | 'Completed' | 'Blocked' | 'Pending';
 
 export interface TaskItem {
   id: string;

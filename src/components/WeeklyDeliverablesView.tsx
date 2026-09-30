@@ -53,12 +53,18 @@ export const WeeklyDeliverablesView: React.FC<WeeklyDeliverablesViewProps> = ({
   const totalCount = weekTasks.length;
   const completedCount = weekTasks.filter((t) => t.status === 'Completed').length;
   const inProgressCount = weekTasks.filter((t) => t.status === 'In Progress').length;
-  const blockedCount = weekTasks.filter((t) => t.status === 'Blocked').length;
+  const pendingCount = weekTasks.filter((t) => t.status === 'Blocked' || t.status === 'Pending').length;
 
   // Filter & Search
   const filteredTasks = useMemo(() => {
     return weekTasks.filter((task) => {
-      if (filter !== 'all' && task.status !== filter) return false;
+      if (filter !== 'all') {
+        if (filter === 'Blocked' || filter === 'Pending') {
+          if (task.status !== 'Blocked' && task.status !== 'Pending') return false;
+        } else if (task.status !== filter) {
+          return false;
+        }
+      }
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchName = task.jobName.toLowerCase().includes(q);
@@ -215,28 +221,28 @@ export const WeeklyDeliverablesView: React.FC<WeeklyDeliverablesViewProps> = ({
             </div>
           </div>
 
-          {/* Blocked & Risks */}
+          {/* Pending Metric Card */}
           <div className="p-4 rounded-xl bg-white border border-[#e5e1e7] shadow-xs flex flex-col justify-between gap-1 relative overflow-hidden">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#ba1a1a]">
-                Blocked & Risks
+              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-700">
+                Pending
               </span>
               <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#ba1a1a] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#ba1a1a]"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
               </span>
             </div>
             <div className="flex items-baseline gap-1.5 mt-1">
-              <span className="text-3xl font-extrabold text-[#ba1a1a] font-mono tabular-nums">
-                {blockedCount}
+              <span className="text-3xl font-extrabold text-amber-800 font-mono tabular-nums">
+                {pendingCount}
               </span>
-              <span className="text-[11px] text-[#ba1a1a] font-medium">requires action</span>
+              <span className="text-[11px] text-amber-700 font-medium">requires action</span>
             </div>
             <div className="w-full bg-[#e5e1e7] rounded-full h-1 mt-2 overflow-hidden">
               <div
-                className="bg-[#ba1a1a] h-full transition-all duration-500 rounded-full"
+                className="bg-amber-500 h-full transition-all duration-500 rounded-full"
                 style={{
-                  width: totalCount > 0 ? `${Math.round((blockedCount / totalCount) * 100)}%` : '0%'
+                  width: totalCount > 0 ? `${Math.round((pendingCount / totalCount) * 100)}%` : '0%'
                 }}
               />
             </div>
@@ -293,15 +299,15 @@ export const WeeklyDeliverablesView: React.FC<WeeklyDeliverablesViewProps> = ({
               In Progress ({inProgressCount})
             </button>
             <button
-              onClick={() => setFilter('Blocked')}
+              onClick={() => setFilter(filter === 'Pending' || filter === 'Blocked' ? 'all' : 'Pending')}
               type="button"
               className={`px-3 py-1.5 rounded-lg text-[12px] font-semibold transition-all whitespace-nowrap ${
-                filter === 'Blocked'
+                filter === 'Pending' || filter === 'Blocked'
                   ? primaryContainerClass
                   : 'text-[#404a3a] hover:bg-[#f0ecf2] font-medium'
               }`}
             >
-              Blocked ({blockedCount})
+              Pending ({pendingCount})
             </button>
           </div>
         </div>
@@ -316,7 +322,7 @@ export const WeeklyDeliverablesView: React.FC<WeeklyDeliverablesViewProps> = ({
                 <th className="py-3 px-4 sm:px-6">Job / Deliverable Name</th>
                 <th className="py-3 px-4 sm:px-6">Requester</th>
                 <th className="py-3 px-4 sm:px-6">Status</th>
-                <th className="py-3 px-4 sm:px-6">Issues & Blockers Note</th>
+                <th className="py-3 px-4 sm:px-6">Issues & Pending Note</th>
                 <th className="py-3 px-4 sm:px-6 text-right">Actions</th>
               </tr>
             </thead>
@@ -350,15 +356,15 @@ export const WeeklyDeliverablesView: React.FC<WeeklyDeliverablesViewProps> = ({
                         </span>
                       )}
                       {task.status === 'In Progress' && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-900">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-900">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
                           In Progress
                         </span>
                       )}
-                      {task.status === 'Blocked' && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#ffdad6] text-[#ba1a1a]">
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#ba1a1a] animate-pulse" />
-                          Blocked
+                      {(task.status === 'Blocked' || task.status === 'Pending') && (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-900 border border-amber-300">
+                          <span className="w-1.5 h-1.5 rounded-full bg-amber-600 animate-pulse" />
+                          Pending
                         </span>
                       )}
 
@@ -366,7 +372,7 @@ export const WeeklyDeliverablesView: React.FC<WeeklyDeliverablesViewProps> = ({
                       <button
                         onClick={() => onCycleStatus(task)}
                         type="button"
-                        title="Click to cycle status (In Progress → Completed → Blocked)"
+                        title="Click to cycle status (In Progress → Completed → Pending)"
                         className="p-1 rounded text-[#404a3a]/60 hover:text-[#1c1b1f] hover:bg-[#f0ecf2] transition-colors"
                       >
                         <ArrowUpDown className="w-3.5 h-3.5" />
@@ -374,13 +380,13 @@ export const WeeklyDeliverablesView: React.FC<WeeklyDeliverablesViewProps> = ({
                     </div>
                   </td>
 
-                  {/* Issues & Blockers Note */}
+                  {/* Issues & Pending Note */}
                   <td className="py-3.5 px-4 sm:px-6 max-w-xs md:max-w-md">
-                    {task.status === 'Blocked' ? (
-                      <div className="flex items-start gap-1.5 p-2 rounded-lg bg-[#ffdad6]/40 text-[#ba1a1a] border border-[#ffdad6]">
-                        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                    {task.status === 'Blocked' || task.status === 'Pending' ? (
+                      <div className="flex items-start gap-1.5 p-2 rounded-lg bg-amber-50 text-amber-900 border border-amber-200">
+                        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
                         <span className="text-[12px] font-medium leading-snug">
-                          {task.issue || 'Blocker reported without note'}
+                          {task.issue || 'Pending review / action required'}
                         </span>
                       </div>
                     ) : task.issue ? (

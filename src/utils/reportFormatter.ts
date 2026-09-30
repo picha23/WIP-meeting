@@ -7,7 +7,7 @@ export function formatWipReport(
 ): { rawText: string; htmlMarkup: string; charCount: number; wordCount: number } {
   const completed = tasks.filter((t) => t.status === 'Completed');
   const inProgress = tasks.filter((t) => t.status === 'In Progress');
-  const blocked = tasks.filter((t) => t.status === 'Blocked');
+  const pending = tasks.filter((t) => t.status === 'Blocked' || (t.status as string) === 'Pending');
   const total = tasks.length;
   const completionRate = total > 0 ? Math.round((completed.length / total) * 100) : 0;
 
@@ -42,10 +42,10 @@ export function formatWipReport(
   // Health Metrics Banner
   if (config.includeMetrics) {
     const metricsRaw = isSlack
-      ? `*Health Snapshot:* ${completionRate}% Done • ${completed.length} Completed • ${inProgress.length} In Progress • ${blocked.length} Critical Risk\n\n`
-      : `[STATUS METRICS: ${total} Tracked | ${completed.length} Resolved | ${inProgress.length} Active | ${blocked.length} Flagged Blocker | Velocity: ${completionRate}%]\n\n`;
+      ? `*Health Snapshot:* ${completionRate}% Done • ${completed.length} Completed • ${inProgress.length} In Progress • ${pending.length} Pending\n\n`
+      : `[STATUS METRICS: ${total} Tracked | ${completed.length} Resolved | ${inProgress.length} Active | ${pending.length} Pending | Velocity: ${completionRate}%]\n\n`;
     raw += metricsRaw;
-    html += `<div class="bg-[#ebe7ec] px-2.5 py-1 rounded text-[#186700] text-[11px] font-mono mb-3 inline-block font-semibold">🚀 <strong>Health Snapshot:</strong> ${completionRate}% Done • ${blocked.length} Critical Risk</div>\n`;
+    html += `<div class="bg-[#ebe7ec] px-2.5 py-1 rounded text-[#186700] text-[11px] font-mono mb-3 inline-block font-semibold">🚀 <strong>Health Snapshot:</strong> ${completionRate}% Done • ${pending.length} Pending</div>\n`;
   }
 
   // Helper to format individual items
@@ -81,13 +81,13 @@ export function formatWipReport(
   };
 
   const renderBlockers = () => {
-    let r = `\n🚨 [ACTIVE BLOCKERS & ACTION REQUIRED]\n`;
-    let h = `<div class="text-[#ba1a1a] font-bold uppercase tracking-wider text-[11px] mt-4 mb-1.5 flex items-center gap-1 font-mono"><span class="w-1.5 h-1.5 rounded-full bg-[#ba1a1a]"></span> ACTIVE BLOCKERS & ACTION REQUIRED</div>`;
-    if (blocked.length === 0) {
+    let r = `\n⏳ [PENDING & ACTION REQUIRED]\n`;
+    let h = `<div class="text-amber-800 font-bold uppercase tracking-wider text-[11px] mt-4 mb-1.5 flex items-center gap-1 font-mono"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> PENDING & ACTION REQUIRED</div>`;
+    if (pending.length === 0) {
       r += `- None (Runway clear)\n`;
-      h += `<div class="text-[#404a3a]/70 italic text-xs pl-2.5 my-1 font-mono">No active blockers identified.</div>`;
+      h += `<div class="text-[#404a3a]/70 italic text-xs pl-2.5 my-1 font-mono">No active pending items identified.</div>`;
     } else {
-      blocked.forEach((item) => {
+      pending.forEach((item) => {
         const res = formatItem(item, true);
         r += res.raw;
         h += res.html;

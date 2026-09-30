@@ -206,7 +206,7 @@ export const Header: React.FC<HeaderProps> = ({
                 {activeDisplayName}
               </span>
               <span className="text-[10px] text-[#556050] leading-none truncate max-w-[120px] sm:max-w-[160px] hidden sm:inline">
-                {user ? 'Google Account' : userProfile.role || 'Senior Product Designer'}
+                {userProfile.role || 'Senior Graphic Designer'}
               </span>
             </div>
 

@@ -13,7 +13,7 @@ const STORAGE_KEYS = {
 export const DEFAULT_USER: UserProfile = {
   name: 'Amri Faizal',
   email: 'amri.faizal@bigtree.com.my',
-  role: 'Senior Product Designer'
+  role: 'Senior Graphic Designer'
 };
 
 export const INITIAL_WEEKS: SprintWeek[] = [
@@ -26,7 +26,7 @@ export const INITIAL_WEEKS: SprintWeek[] = [
     status: 'active',
     quarter: 'q4',
     retrospectiveNote: 'Sprint actively tracking high-priority marketing deliverables and Q4 checkout polish.',
-    closedBy: 'Senior Product Designer'
+    closedBy: 'Senior Graphic Designer'
   },
   {
     id: 'w41',
@@ -37,7 +37,7 @@ export const INITIAL_WEEKS: SprintWeek[] = [
     status: 'closed',
     quarter: 'q4',
     retrospectiveNote: 'Significant velocity acceleration after adopting local tokens. Week 41 closed without any technical debt carry-overs. Team recommends standardizing the 4-task ceiling for optimal code quality and cross-functional alignment.',
-    closedBy: 'Senior Product Designer',
+    closedBy: 'Senior Graphic Designer',
     syncAgo: 'Synchronized 4 days ago'
   },
   {
@@ -49,7 +49,7 @@ export const INITIAL_WEEKS: SprintWeek[] = [
     status: 'closed',
     quarter: 'q4',
     retrospectiveNote: 'OAuth token validation bottleneck resolved in sync meeting with David Miller on Oct 05. Decoupled direct webhook ingestion into an asynchronous queue, scheduled for release in sprint W42.',
-    closedBy: 'Senior Product Designer',
+    closedBy: 'Senior Graphic Designer',
     reviewers: 'Elena Rostova (VP Eng) & David Miller'
   },
   {
@@ -61,7 +61,7 @@ export const INITIAL_WEEKS: SprintWeek[] = [
     status: 'closed',
     quarter: 'q3',
     retrospectiveNote: 'Quarter-end delivery finalization complete. All committed deliverables shipped on time with high audit compliance.',
-    closedBy: 'Senior Product Designer',
+    closedBy: 'Senior Graphic Designer',
     reviewers: 'Verified by Sarah Chen'
   }
 ];
@@ -509,7 +509,11 @@ export function loadUserProfile(): UserProfile {
   try {
     const raw = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
     if (!raw) return DEFAULT_USER;
-    return { ...DEFAULT_USER, ...JSON.parse(raw) };
+    const parsed = JSON.parse(raw);
+    if (parsed.role === 'Senior Product Designer' || !parsed.role) {
+      parsed.role = 'Senior Graphic Designer';
+    }
+    return { ...DEFAULT_USER, ...parsed };
   } catch (e) {
     return DEFAULT_USER;
   }

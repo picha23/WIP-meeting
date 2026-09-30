@@ -30,7 +30,7 @@ export const QuickReportModal: React.FC<QuickReportModalProps> = ({
 
   let reportText = `-----------------------------------------\n`;
   reportText += `[WIP REPORT: WEEK OF ${weekLabel}]\n`;
-  reportText += `Owner: Senior Product Designer\n\n`;
+  reportText += `Owner: Senior Graphic Designer\n\n`;
 
   reportText += `✅ COMPLETED:\n`;
   if (completed.length > 0) {
