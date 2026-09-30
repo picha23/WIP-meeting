@@ -7,7 +7,8 @@ import {
   AlertTriangle,
   HardDrive,
   ExternalLink,
-  X
+  X,
+  Cloud
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -19,6 +20,7 @@ interface SidebarProps {
   onCloseMobile?: () => void;
   themeColor: 'green' | 'indigo';
   blockerCount: number;
+  isCloudConnected?: boolean;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -29,7 +31,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpenMobile = false,
   onCloseMobile,
   themeColor,
-  blockerCount
+  blockerCount,
+  isCloudConnected = false
 }) => {
   const navItems = [
     {
@@ -141,24 +144,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="p-3 rounded-xl bg-[#f6f2f8] border border-[#e5e1e7] flex flex-col gap-2">
           <div className="flex items-center justify-between text-[#1c1b1f] text-[11px] font-semibold tracking-wider">
             <span className="flex items-center gap-1.5">
-              <HardDrive className="w-3.5 h-3.5 text-[#186700]" />
+              {isCloudConnected ? (
+                <Cloud className="w-3.5 h-3.5 text-[#186700]" />
+              ) : (
+                <HardDrive className="w-3.5 h-3.5 text-[#186700]" />
+              )}
               <span>Storage Engine</span>
             </span>
-            <span className="text-[11px] text-[#186700] font-mono font-semibold">
-              Local IndexedDB
+            <span className="text-[10px] text-[#186700] font-mono font-semibold">
+              {isCloudConnected ? 'Cloud Firestore' : 'Local IndexedDB'}
             </span>
           </div>
 
           <div className="w-full bg-[#e5e1e7] rounded-full h-1.5 overflow-hidden">
             <div
-              className={`h-full w-[38%] rounded-full ${
+              className={`h-full ${isCloudConnected ? 'w-[75%]' : 'w-[38%]'} rounded-full ${
                 themeColor === 'indigo' ? 'bg-[#4f46e5]' : 'bg-[#218300]'
               }`}
             />
           </div>
 
           <div className="flex items-center justify-between text-[#404a3a] text-[11px]">
-            <span>{storageUsage}</span>
+            <span>{isCloudConnected ? 'Real-time sync' : storageUsage}</span>
             <button
               onClick={onOpenStorageModal}
               className={`font-semibold hover:underline flex items-center gap-0.5 ${

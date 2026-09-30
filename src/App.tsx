@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   TaskItem,
   SprintWeek,
@@ -26,6 +26,20 @@ import {
   INITIAL_BLOCKERS,
   INITIAL_REPORT_HISTORY
 } from './utils/storage';
+import { auth, signInWithGoogle, logOut } from './firebase';
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import {
+  saveTaskToFirestore,
+  deleteTaskFromFirestore,
+  subscribeTasks,
+  subscribeWeeks,
+  subscribeBlockers,
+  subscribeReports,
+  saveBlockerToFirestore,
+  saveReportToFirestore,
+  ensureUserProfile,
+  syncInitialDataIfEmpty
+} from './services/firestoreService';
 import { Header } from './components/Header';
 import { Sidebar } from './components/Sidebar';
 import { WeeklyDeliverablesView } from './components/WeeklyDeliverablesView';
@@ -51,6 +65,12 @@ export default function App() {
   const [themeColor, setThemeColorState] = useState<'green' | 'indigo'>('green');
   const [storageUsage, setStorageUsage] = useState<string>('24 KB Used');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Firebase Auth & Cloud Sync State
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const userRef = useRef<FirebaseUser | null>(null);
+  userRef.current = user;
 
   // Modals State
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -83,7 +103,7 @@ export default function App() {
     []
   );
 
-  // Initial Load from Storage
+  // Initial Load from Local Storage
   useEffect(() => {
     const loadedTasks = loadTasksFromStorage();
     const loadedWeeks = loadWeeksFromStorage();
@@ -100,6 +120,91 @@ export default function App() {
     setThemeColorState(loadedTheme);
     setStorageUsage(getEstimatedStorageSize());
   }, []);
+
+  // Firebase Auth Listener & Firestore Live Sync
+  useEffect(() => {
+    let unsubTasks: (() => void) | undefined;
+    let unsubWeeks: (() => void) | undefined;
+    let unsubBlockers: (() => void) | undefined;
+    let unsubReports: (() => void) | undefined;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, async (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        setIsSyncing(true);
+        try {
+          await ensureUserProfile({
+            uid: currentUser.uid,
+            email: currentUser.email,
+            displayName: currentUser.displayName,
+            photoURL: currentUser.photoURL
+          });
+
+          // Seed cloud data if user's cloud account is empty
+          await syncInitialDataIfEmpty(
+            currentUser.uid,
+            loadTasksFromStorage(),
+            loadWeeksFromStorage(),
+            loadBlockersFromStorage()
+          );
+
+          // Real-time subscriptions
+          unsubTasks = subscribeTasks(currentUser.uid, (cloudTasks) => {
+            if (cloudTasks && cloudTasks.length > 0) {
+              setTasks(cloudTasks);
+              saveTasksToStorage(cloudTasks);
+            }
+          });
+
+          unsubWeeks = subscribeWeeks(currentUser.uid, (cloudWeeks) => {
+            if (cloudWeeks && cloudWeeks.length > 0) {
+              setWeeks(cloudWeeks);
+              saveWeeksToStorage(cloudWeeks);
+            }
+          });
+
+          unsubBlockers = subscribeBlockers(currentUser.uid, (cloudBlockers) => {
+            if (cloudBlockers) {
+              setBlockers(cloudBlockers);
+              saveBlockersToStorage(cloudBlockers);
+            }
+          });
+
+          unsubReports = subscribeReports(currentUser.uid, (cloudReports) => {
+            if (cloudReports) {
+              setReportHistory(cloudReports);
+              saveReportHistoryToStorage(cloudReports);
+            }
+          });
+
+          showToast(
+            'Firebase Cloud Tersinkron',
+            `Disambungkan ke akaun: ${currentUser.displayName || currentUser.email}`,
+            'success'
+          );
+        } catch (error) {
+          console.error('Error establishing Firestore sync:', error);
+          showToast('Amaran Sinkron', 'Gagal menyegerakkan data awan dengan sempurna', 'warning');
+        } finally {
+          setIsSyncing(false);
+        }
+      } else {
+        // Cleanup subscriptions on logout
+        unsubTasks?.();
+        unsubWeeks?.();
+        unsubBlockers?.();
+        unsubReports?.();
+      }
+    });
+
+    return () => {
+      unsubscribeAuth();
+      unsubTasks?.();
+      unsubWeeks?.();
+      unsubBlockers?.();
+      unsubReports?.();
+    };
+  }, [showToast]);
 
   // Update storage size on state changes
   useEffect(() => {
@@ -118,13 +223,53 @@ export default function App() {
       quarter: 'q4'
     };
 
+  // Sign In with Google
+  const handleSignIn = async () => {
+    setIsSyncing(true);
+    try {
+      const loggedUser = await signInWithGoogle();
+      if (!loggedUser) {
+        // User closed or cancelled the popup dialog
+        return;
+      }
+      showToast(
+        'Log Masuk Berjaya',
+        `Selamat kembali, ${loggedUser.displayName || loggedUser.email || 'Pengguna'}!`
+      );
+    } catch (err: unknown) {
+      const errorObj = err as { code?: string; message?: string };
+      if (
+        errorObj?.code === 'auth/popup-closed-by-user' ||
+        errorObj?.code === 'auth/cancelled-popup-request'
+      ) {
+        return;
+      }
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      console.warn('Sign-in notification:', err);
+      showToast('Log Masuk Tidak Berjaya', errorMsg || 'Gagal log masuk Google.', 'warning');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
+  // Sign Out
+  const handleSignOut = async () => {
+    try {
+      await logOut();
+      showToast('Log Keluar', 'Anda telah log keluar. Storan beralih ke cache setempat.');
+    } catch (err) {
+      console.error('Sign out error:', err);
+      showToast('Ralat', 'Gagal log keluar.', 'warning');
+    }
+  };
+
   // Change Active Sprint Week
   const handleSelectWeek = (weekId: string) => {
     setActiveWeekIdState(weekId);
     setActiveWeekId(weekId);
     const selected = weeks.find((w) => w.id === weekId);
     if (selected) {
-      showToast('Sprint Switched', `Loaded deliverables for ${selected.shortLabel}`);
+      showToast('Sprint Ditukar', `Memaparkan tugasan bagi ${selected.shortLabel}`);
     }
   };
 
@@ -133,11 +278,11 @@ export default function App() {
     const nextColor = themeColor === 'green' ? 'indigo' : 'green';
     setThemeColorState(nextColor);
     setThemeColor(nextColor);
-    showToast('Theme Updated', `Switched accent style to ${nextColor}`);
+    showToast('Tema Dikemas Kini', `Menukar gaya aksen kepada ${nextColor}`);
   };
 
   // Save Task (Add or Edit)
-  const handleSaveTask = (taskData: {
+  const handleSaveTask = async (taskData: {
     id?: string;
     jobName: string;
     requester: string;
@@ -146,12 +291,13 @@ export default function App() {
     tag?: string;
   }) => {
     let updatedTasks: TaskItem[];
+    let affectedTask: TaskItem;
 
     if (taskData.id) {
       // Edit existing
       updatedTasks = tasks.map((t) => {
         if (t.id === taskData.id) {
-          return {
+          affectedTask = {
             ...t,
             jobName: taskData.jobName,
             requester: taskData.requester,
@@ -160,13 +306,14 @@ export default function App() {
             tag: taskData.tag,
             updatedAt: new Date().toISOString()
           };
+          return affectedTask;
         }
         return t;
       });
-      showToast('Task Updated', `Changes to "${taskData.jobName}" saved.`);
+      showToast('Tugasan Dikemas Kini', `Perubahan pada "${taskData.jobName}" disimpan.`);
     } else {
       // Add new task
-      const newTask: TaskItem = {
+      affectedTask = {
         id: 'task_' + Date.now(),
         weekId: activeWeekId,
         jobName: taskData.jobName,
@@ -176,49 +323,70 @@ export default function App() {
         tag: taskData.tag || 'SPR-' + currentWeek.weekNumber,
         createdAt: new Date().toISOString()
       };
-      updatedTasks = [newTask, ...tasks];
-      showToast('Task Created', `"${taskData.jobName}" added to active sprint.`);
+      updatedTasks = [affectedTask, ...tasks];
+      showToast('Tugasan Dicipta', `"${taskData.jobName}" ditambah ke sprint semasa.`);
 
       // If added as Blocked, automatically log to blockers list as well
       if (taskData.status === 'Blocked') {
         const newBlocker: BlockerIncident = {
           id: 'blk_' + Date.now(),
-          taskId: newTask.id,
-          title: newTask.jobName,
+          taskId: affectedTask.id,
+          title: affectedTask.jobName,
           severity: 'critical',
           severityLabel: 'Critical Hard Blocker',
           daysStalled: '1 Day In Triage',
-          taskRef: newTask.tag || 'TASK-' + Math.floor(1000 + Math.random() * 9000),
+          taskRef: affectedTask.tag || 'TASK-' + Math.floor(1000 + Math.random() * 9000),
           rootCauseType: 'Deliverable Impeded',
-          rootCauseDetail: newTask.issue || 'Blocked dependency reported by task owner',
-          requester: newTask.requester,
+          rootCauseDetail: affectedTask.issue || 'Blocked dependency reported by task owner',
+          requester: affectedTask.requester,
           escalatedTo: 'Squad Lead',
-          lastUpdated: 'Just now'
+          lastUpdated: 'Baru sahaja'
         };
         const updatedBlockers = [newBlocker, ...blockers];
         setBlockers(updatedBlockers);
         saveBlockersToStorage(updatedBlockers);
+
+        if (userRef.current) {
+          saveBlockerToFirestore(newBlocker, userRef.current.uid).catch(console.error);
+        }
       }
     }
 
     setTasks(updatedTasks);
     saveTasksToStorage(updatedTasks);
+
+    // Sync to Firestore if authenticated
+    if (userRef.current && affectedTask!) {
+      try {
+        await saveTaskToFirestore(affectedTask, userRef.current.uid);
+      } catch (err) {
+        console.error('Failed to sync task to Firestore:', err);
+      }
+    }
   };
 
   // Delete Task
-  const handleDeleteTask = (taskId: string) => {
+  const handleDeleteTask = async (taskId: string) => {
     const taskToDelete = tasks.find((t) => t.id === taskId);
     const updated = tasks.filter((t) => t.id !== taskId);
     setTasks(updated);
     saveTasksToStorage(updated);
     showToast(
-      'Deliverable Removed',
-      `"${taskToDelete?.jobName || 'Task'}" was deleted from sprint records.`
+      'Tugasan Dipadam',
+      `"${taskToDelete?.jobName || 'Tugasan'}" telah dipadam dari rekod sprint.`
     );
+
+    if (userRef.current) {
+      try {
+        await deleteTaskFromFirestore(taskId);
+      } catch (err) {
+        console.error('Failed to delete task from Firestore:', err);
+      }
+    }
   };
 
   // Quick Status Cycle: In Progress -> Completed -> Blocked -> In Progress
-  const handleCycleStatus = (task: TaskItem) => {
+  const handleCycleStatus = async (task: TaskItem) => {
     let nextStatus: TaskStatus;
     if (task.status === 'In Progress') {
       nextStatus = 'Completed';
@@ -228,24 +396,35 @@ export default function App() {
       nextStatus = 'In Progress';
     }
 
-    const updated = tasks.map((t) => (t.id === task.id ? { ...t, status: nextStatus } : t));
+    const updatedTask: TaskItem = { ...task, status: nextStatus, updatedAt: new Date().toISOString() };
+    const updated = tasks.map((t) => (t.id === task.id ? updatedTask : t));
     setTasks(updated);
     saveTasksToStorage(updated);
-    showToast('Status Updated', `"${task.jobName}" marked as ${nextStatus}.`);
+    showToast('Status Dikemas Kini', `"${task.jobName}" ditandakan sebagai ${nextStatus}.`);
+
+    if (userRef.current) {
+      try {
+        await saveTaskToFirestore(updatedTask, userRef.current.uid);
+      } catch (err) {
+        console.error('Failed to update task status in Firestore:', err);
+      }
+    }
   };
 
   // Resolve Blocker
-  const handleResolveBlocker = (blockerId: string) => {
+  const handleResolveBlocker = async (blockerId: string) => {
+    let resolvedBlockerItem: BlockerIncident | undefined;
     const updated = blockers.map((b) => {
       if (b.id === blockerId) {
-        return {
+        resolvedBlockerItem = {
           ...b,
           isResolved: true,
           severity: 'resolved' as const,
-          severityLabel: 'Resolved',
-          daysStalled: 'Cleared',
-          lastUpdated: 'Today'
+          severityLabel: 'Selesai',
+          daysStalled: 'Dibersihkan',
+          lastUpdated: 'Hari ini'
         };
+        return resolvedBlockerItem;
       }
       return b;
     });
@@ -260,33 +439,47 @@ export default function App() {
       );
       setTasks(updatedTasks);
       saveTasksToStorage(updatedTasks);
+      const matchedTask = updatedTasks.find((t) => t.id === matchedBlocker.taskId);
+      if (userRef.current && matchedTask) {
+        saveTaskToFirestore(matchedTask, userRef.current.uid).catch(console.error);
+      }
     }
 
-    showToast('Impediment Cleared', `Resolved blocker moved to historical cleared log.`);
+    showToast('Halangan Diselesaikan', `Halangan yang selesai dipindahkan ke log sejarah.`);
+
+    if (userRef.current && resolvedBlockerItem) {
+      saveBlockerToFirestore(resolvedBlockerItem, userRef.current.uid).catch(console.error);
+    }
   };
 
   // Reopen Blocker
-  const handleReopenBlocker = (blockerId: string) => {
+  const handleReopenBlocker = async (blockerId: string) => {
+    let reopenedItem: BlockerIncident | undefined;
     const updated = blockers.map((b) => {
       if (b.id === blockerId) {
-        return {
+        reopenedItem = {
           ...b,
           isResolved: false,
           severity: 'risk' as const,
           severityLabel: 'At Risk / Dependency Pending',
-          daysStalled: 'Reopened 1d',
-          lastUpdated: 'Just now'
+          daysStalled: 'Dibuka Semula',
+          lastUpdated: 'Baru sahaja'
         };
+        return reopenedItem;
       }
       return b;
     });
     setBlockers(updated);
     saveBlockersToStorage(updated);
-    showToast('Blocker Reopened', 'Impediment restored to active monitoring queue.');
+    showToast('Halangan Dibuka Semula', 'Halangan dikembalikan ke senarai pemantauan aktif.');
+
+    if (userRef.current && reopenedItem) {
+      saveBlockerToFirestore(reopenedItem, userRef.current.uid).catch(console.error);
+    }
   };
 
   // Save new blocker from modal
-  const handleSaveNewBlocker = (blockerData: Omit<BlockerIncident, 'id'>) => {
+  const handleSaveNewBlocker = async (blockerData: Omit<BlockerIncident, 'id'>) => {
     const newBlocker: BlockerIncident = {
       ...blockerData,
       id: 'blk_' + Date.now()
@@ -294,14 +487,22 @@ export default function App() {
     const updated = [newBlocker, ...blockers];
     setBlockers(updated);
     saveBlockersToStorage(updated);
-    showToast('Blocker Recorded', `Escalation alert queued for ${blockerData.title}`);
+    showToast('Halangan Direkod', `Amaran eskalasi dimasukkan untuk ${blockerData.title}`);
+
+    if (userRef.current) {
+      saveBlockerToFirestore(newBlocker, userRef.current.uid).catch(console.error);
+    }
   };
 
   // Save to Report History
-  const handleSaveReportHistory = (report: GeneratedReportHistory) => {
+  const handleSaveReportHistory = async (report: GeneratedReportHistory) => {
     const updated = [report, ...reportHistory.slice(0, 8)];
     setReportHistory(updated);
     saveReportHistoryToStorage(updated);
+
+    if (userRef.current) {
+      saveReportToFirestore(report, userRef.current.uid).catch(console.error);
+    }
   };
 
   // Reset to default
@@ -316,6 +517,7 @@ export default function App() {
     saveBlockersToStorage(INITIAL_BLOCKERS);
     saveReportHistoryToStorage(INITIAL_REPORT_HISTORY);
     setActiveWeekId('week_current');
+    showToast('Data Ditetapkan Semula', 'Semua data contoh asal telah dimuat semula.');
   };
 
   const activeBlockersCount = blockers.filter((b) => !b.isResolved && b.severity !== 'resolved').length;
@@ -338,6 +540,10 @@ export default function App() {
         onOpenMobileMenu={() => setIsMobileMenuOpen(true)}
         themeColor={themeColor}
         onToggleTheme={handleToggleTheme}
+        user={user}
+        onSignIn={handleSignIn}
+        onSignOut={handleSignOut}
+        isSyncing={isSyncing}
       />
 
       {/* Left Sidebar */}
@@ -350,6 +556,7 @@ export default function App() {
         onCloseMobile={() => setIsMobileMenuOpen(false)}
         themeColor={themeColor}
         blockerCount={activeBlockersCount}
+        isCloudConnected={Boolean(user)}
       />
 
       {/* Main Viewport Content */}
@@ -395,7 +602,7 @@ export default function App() {
               tasks={tasks}
               onInspectSprint={(week) => {
                 handleSelectWeek(week.id);
-                showToast('Sprint Selected', `Inspecting ${week.shortLabel}`);
+                showToast('Sprint Dipilih', `Memeriksa ${week.shortLabel}`);
               }}
               onShowToast={showToast}
               themeColor={themeColor}

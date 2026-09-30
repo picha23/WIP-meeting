@@ -1,0 +1,280 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile document",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Unique user identifier matching Firebase Auth UID"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User email address"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "User profile avatar URL"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Timestamp when the user document was created"
+        }
+      },
+      "required": ["userId", "email"]
+    },
+    "TaskItem": {
+      "title": "TaskItem",
+      "description": "Work in progress deliverable task item",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Task unique identifier"
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the task owner"
+        },
+        "weekId": {
+          "type": "string",
+          "description": "Identifier of the sprint week this task belongs to"
+        },
+        "jobName": {
+          "type": "string",
+          "description": "Name or deliverable description of the task",
+          "maxLength": 300
+        },
+        "requester": {
+          "type": "string",
+          "description": "Name or department of stakeholder requesting the task",
+          "maxLength": 150
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status of the deliverable",
+          "enum": ["In Progress", "Completed", "Blocked"]
+        },
+        "issue": {
+          "type": "string",
+          "description": "Impediment or blocker description if any",
+          "maxLength": 1000
+        },
+        "tag": {
+          "type": "string",
+          "description": "Ticket or deliverable reference code",
+          "maxLength": 50
+        },
+        "nextStep": {
+          "type": "string",
+          "description": "Next milestone or action",
+          "maxLength": 300
+        },
+        "targetEta": {
+          "type": "string",
+          "description": "Target completion date or ETA",
+          "maxLength": 100
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        }
+      },
+      "required": ["id", "ownerId", "weekId", "jobName", "requester", "status"]
+    },
+    "SprintWeek": {
+      "title": "SprintWeek",
+      "description": "Sprint week configuration and retrospective log",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique sprint identifier (e.g. week_current, w41)"
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the workspace owner"
+        },
+        "weekNumber": {
+          "type": "number",
+          "description": "Week number of the year"
+        },
+        "label": {
+          "type": "string",
+          "description": "Full label description of the sprint week"
+        },
+        "shortLabel": {
+          "type": "string",
+          "description": "Short label (e.g. Week 42)"
+        },
+        "dateRange": {
+          "type": "string",
+          "description": "Date range string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "closed"]
+        },
+        "quarter": {
+          "type": "string",
+          "enum": ["q4", "q3", "q2"]
+        },
+        "retrospectiveNote": {
+          "type": "string",
+          "description": "Lead retrospective notes and key outcomes"
+        },
+        "closedBy": {
+          "type": "string",
+          "description": "Person who closed the sprint"
+        },
+        "createdAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "ownerId", "weekNumber", "label", "status"]
+    },
+    "BlockerIncident": {
+      "title": "BlockerIncident",
+      "description": "Tracked impediment or dependency risk",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique blocker ID"
+        },
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the incident owner"
+        },
+        "taskId": {
+          "type": "string",
+          "description": "Associated deliverable task ID if any"
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the blocked deliverable",
+          "maxLength": 300
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["critical", "risk", "resolved"]
+        },
+        "severityLabel": {
+          "type": "string"
+        },
+        "daysStalled": {
+          "type": "string"
+        },
+        "taskRef": {
+          "type": "string"
+        },
+        "rootCauseType": {
+          "type": "string"
+        },
+        "rootCauseDetail": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "requester": {
+          "type": "string"
+        },
+        "escalatedTo": {
+          "type": "string"
+        },
+        "lastUpdated": {
+          "type": "string"
+        },
+        "clearanceDuration": {
+          "type": "string"
+        },
+        "isResolved": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "ownerId", "title", "severity", "escalatedTo", "rootCauseDetail"]
+    },
+    "ReportHistory": {
+      "title": "ReportHistory",
+      "description": "Archived generated text reports and standup dispatches",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "ownerId": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "toneBadge": {
+          "type": "string"
+        },
+        "itemCount": {
+          "type": "number"
+        },
+        "wordCount": {
+          "type": "number"
+        },
+        "content": {
+          "type": "string"
+        },
+        "preview": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        }
+      },
+      "required": ["id", "ownerId", "title", "content"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/User"
+      },
+      "description": "User profile documents keyed by Auth UID"
+    },
+    "/tasks/{taskId}": {
+      "schema": {
+        "$ref": "#/entities/TaskItem"
+      },
+      "description": "Deliverable tasks created and owned by authenticated users"
+    },
+    "/weeks/{weekId}": {
+      "schema": {
+        "$ref": "#/entities/SprintWeek"
+      },
+      "description": "Sprint weeks and historical archives owned by user"
+    },
+    "/blockers/{blockerId}": {
+      "schema": {
+        "$ref": "#/entities/BlockerIncident"
+      },
+      "description": "Incident log and blocker triage records"
+    },
+    "/reports/{reportId}": {
+      "schema": {
+        "$ref": "#/entities/ReportHistory"
+      },
+      "description": "Generated standup reports history"
+    }
+  }
+}

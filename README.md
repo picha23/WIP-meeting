@@ -2,11 +2,12 @@
 
 [![React](https://img.shields.io/badge/React-19.0-61dafb.svg?style=flat&logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg?style=flat&logo=typescript)](https://www.typescriptlang.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-Firestore_%26_Auth-ffca28.svg?style=flat&logo=firebase)](https://firebase.google.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.0-38bdf8.svg?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/Vite-8.x-646cff.svg?style=flat&logo=vite)](https://vitejs.dev/)
 [![Lesen: Apache-2.0](https://img.shields.io/badge/Lesen-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional solo, ketua pereka produk (*Senior Product Designer*), ketua teknikal, dan pengurus projek. **WIP Tracker** memudahkan penjejakan tugasan mingguan, eskalasi halangan (*blockers*), arkib retrospektif sprint, dan penjanaan laporan mesyuarat Work-In-Progress (WIP) serta sesi *standup* secara berformat dalam 1-klik.
+Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional solo, ketua pereka produk (*Senior Product Designer*), ketua teknikal, dan pengurus projek. **WIP Tracker** memudahkan penjejakan tugasan mingguan, eskalasi halangan (*blockers*), arkib retrospektif sprint, dan penjanaan laporan mesyuarat Work-In-Progress (WIP) serta sesi *standup* secara berformat dalam 1-klik, kini disokong oleh pangkalan data awan **Firebase Firestore & Pengesahan Google**.
 
 ---
 
@@ -39,8 +40,14 @@ Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional 
   - Penjejakan SLA dengan purata tempoh penyelesaian dan visualisasi *sparkline*.
   - Panduan SOP (Prosedur Operasi Standard) eskalasi bertempoh masa (&lt;24j, &gt;24j, &gt;48j).
 
+- **🔥 Integrasi Awan Firebase (Firestore & Pengesahan Google)**:
+  - Menyokong log masuk akaun Google melalui Firebase Authentication dengan mod pop-up selamat.
+  - Pengendalian ralat mesra pengguna bagi penutupan tetingkap log masuk (*graceful popup cancellation handling*).
+  - Penyegerakan masa nyata (*real-time live synchronization*) ke Firebase Cloud Firestore.
+  - Peraturan keselamatan Firestore (*firestore.rules*) yang teguh dengan pengesanan pemilikan pengguna (`isSignedIn()`, `isOwner()`, `isValidUserDoc()`).
+  - Peralihan automatik: Berfungsi luar talian sepenuhnya melalui storan tempatan (*Offline-First*) apabila belum log masuk atau terputus sambungan, dan bersinkron segera apabila log masuk.
+
 - **💾 Enjin Storan Tempatan Luar Talian (*Offline-First*)**:
-  - Tidak memerlukan pelayan luaran atau pangkalan data awan pihak ketiga.
   - Menyimpan data secara automatik dalam pelayar melalui `localStorage` / IndexedDB.
   - Pengurus Storan membolehkan sandaran penuh (*backup JSON*) dieksport atau data ditetapkan semula ke sampel asal.
 
@@ -53,13 +60,17 @@ Aplikasi web produktiviti berprestasi tinggi yang direka khas untuk profesional 
 ## 🛠️ Tindanan Teknologi & Arkitektur
 
 - **Rangka Kerja (*Framework*)**: [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
+- **Pangkalan Data & Pengesahan**: [Firebase Firestore](https://firebase.google.com/docs/firestore) & [Firebase Auth](https://firebase.google.com/docs/auth)
 - **Alat Bina (*Build Tool*)**: [Vite 8](https://vitejs.dev/) bersama `@tailwindcss/vite`
 - **Gaya Visual (*Styling*)**: [Tailwind CSS v4](https://tailwindcss.com/)
 - **Ikon**: [Lucide React](https://lucide.dev/) + Google Material Symbols
-- **Pengurusan Keadaan & Storan**: *Client-side reactive state* diselaraskan bersama *Web Storage* pelayar
+- **Pengurusan Keadaan & Storan**: *Client-side reactive state* diselaraskan bersama Firestore & *Web Storage* pelayar
 
 ```
 wip-tracker/
+├── firebase-blueprint.json     # Skema blueprint entiti Firestore
+├── firestore.rules             # Peraturan keselamatan Firestore yang disahkan & dideploy
+├── firebase-applet-config.json # Konfigurasi klien Firebase (ID projek, pangkalan data, kunci API)
 ├── index.html                  # Titik masuk HTML dengan font Inter & JetBrains Mono
 ├── metadata.json               # Deskriptor keupayaan aplikasi
 ├── package.json                # Dependensi projek dan skrip npm
@@ -67,16 +78,19 @@ wip-tracker/
 ├── README.md                   # Dokumentasi penuh projek (Bahasa Melayu)
 ├── src/
 │   ├── main.tsx                # Titik masuk React
-│   ├── App.tsx                 # Rangka utama, penukar paparan, dan pengurusan modal
+│   ├── App.tsx                 # Rangka utama, penyegerakan Firebase, penukar paparan, dan modal
+│   ├── firebase.ts             # Inisialisasi Firebase App, Auth, dan Firestore Client
 │   ├── index.css               # Definisi global Tailwind CSS
 │   ├── types/
 │   │   └── index.ts            # Antaramuka TypeScript (TaskItem, SprintWeek, dsb.)
+│   ├── services/
+│   │   └── firestoreService.ts # Perkhidmatan CRUD & langganan masa nyata Firestore
 │   ├── utils/
 │   │   ├── storage.ts          # Enjin storan localStorage, data benih, dan metrik storan
 │   │   └── reportFormatter.ts  # Enjin kompilasi Markdown & format Slack
 │   └── components/
-│       ├── Header.tsx                  # Bar navigasi atas, pemilih sprint, dan togol tema
-│       ├── Sidebar.tsx                 # Bar sisi navigasi dengan status enjin storan
+│       ├── Header.tsx                  # Bar navigasi atas, status log masuk Google & penyegerakan
+│       ├── Sidebar.tsx                 # Bar sisi navigasi dengan status enjin storan awan/tempatan
 │       ├── WeeklyDeliverablesView.tsx  # F01 & F02: Papan pemuka tugasan mingguan
 │       ├── ReportGeneratorView.tsx     # F03: Penjana laporan langsung dan sejarah laporan
 │       ├── WeeklySprintsArchiveView.tsx# F04: Arkib lejar sprint bersejarah & analitik
@@ -131,6 +145,26 @@ wip-tracker/
 
 ---
 
+## 📤 Arahan Push ke GitHub
+
+Sekiranya anda membuat klon atau menggunakan repositori Git tempatan, jalankan arahan berikut di terminal untuk menghantar kemas kini terkini ke GitHub:
+
+```bash
+# 1. Semak fail yang telah diubah
+git status
+
+# 2. Tambah semua fail kemas kini termasuk README.md dan kod sumber
+git add .
+
+# 3. Buat komit dengan mesej yang jelas
+git commit -m "docs: kemas kini README.md dengan integrasi Firebase dan panduan lengkap"
+
+# 4. Hantar perubahan ke cawangan utama di GitHub
+git push origin main
+```
+
+---
+
 ## 📋 Senarai Semak Ujian & Penilaian (Berdasarkan PRD)
 
 | Rujukan | Senario Ujian | Status |
@@ -141,6 +175,8 @@ wip-tracker/
 | **TC04** | Klik butang "Salin ke Papan Klip" dan sahkan kandungan teks sepadan dengan pratonton modal | ✅ Lulus |
 | **TC05** | Muat semula pelayar (*refresh*); sahkan storan tempatan mengekalkan semua rekod data | ✅ Lulus |
 | **TC06** | Tukar minggu sprint dan sahkan tugasan diasingkan mengikut minggu masing-masing | ✅ Lulus |
+| **TC07** | Log masuk akaun Google melalui Firebase Auth dan sahkan penyegerakan langsung Firestore | ✅ Lulus |
+| **TC08** | Tutup tetingkap popup log masuk; sahkan tiada ralat sistem terangkat (*graceful cancellation*) | ✅ Lulus |
 
 ---
 

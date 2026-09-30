@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SprintWeek } from '../types';
-import { Calendar, CheckCircle2, ChevronDown, Menu, User, Palette } from 'lucide-react';
+import { Calendar, ChevronDown, Menu, User, Palette, LogIn, LogOut, Cloud, ShieldCheck } from 'lucide-react';
+import { User as FirebaseUser } from 'firebase/auth';
 
 interface HeaderProps {
   currentWeek: SprintWeek;
@@ -9,6 +10,10 @@ interface HeaderProps {
   onOpenMobileMenu?: () => void;
   themeColor: 'green' | 'indigo';
   onToggleTheme: () => void;
+  user: FirebaseUser | null;
+  onSignIn: () => void;
+  onSignOut: () => void;
+  isSyncing: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -18,9 +23,20 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenMobileMenu,
   themeColor,
   onToggleTheme,
+  user,
+  onSignIn,
+  onSignOut,
+  isSyncing
 }) => {
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+
+  const primaryBtnClass =
+    themeColor === 'indigo'
+      ? 'bg-[#4f46e5] text-white hover:bg-[#4338ca]'
+      : 'bg-[#218300] text-white hover:bg-[#186700]';
+
   return (
-    <header className="fixed top-0 left-0 right-0 h-14 bg-white/95 backdrop-blur-sm z-50 flex items-center justify-between px-4 sm:px-6 border-b border-[#e5e1e7] shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
+    <header className="fixed top-0 left-0 right-0 h-14 bg-white/95 backdrop-blur-sm z-50 flex items-center justify-between px-3 sm:px-6 border-b border-[#e5e1e7] shadow-[0_1px_4px_rgba(0,0,0,0.03)]">
       {/* Brand & App Title */}
       <div className="flex items-center gap-3">
         {onOpenMobileMenu && (
@@ -38,7 +54,6 @@ export const Header: React.FC<HeaderProps> = ({
             alt="WIP Tracker Logo"
             className="h-8 w-auto object-contain"
             onError={(e) => {
-              // Graceful SVG fallback if external link is restricted
               (e.target as HTMLElement).style.display = 'none';
             }}
           />
@@ -56,6 +71,9 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 v2.4
               </span>
+              <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-100/70 text-amber-800 text-[10px] font-mono font-semibold">
+                🔥 Firebase
+              </span>
             </div>
             <span className="text-[11px] text-[#404a3a] leading-tight hidden sm:inline-block font-medium">
               Weekly Deliverables & Meeting Dispatch
@@ -65,9 +83,9 @@ export const Header: React.FC<HeaderProps> = ({
       </div>
 
       {/* Header Context Controls */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3">
         {/* Quick Sprint Week Switcher */}
-        <div className="relative inline-flex items-center bg-[#f6f2f8] border border-[#e5e1e7] hover:border-[#bfcab5] rounded-full px-3 py-1 shadow-sm transition-all">
+        <div className="relative inline-flex items-center bg-[#f6f2f8] border border-[#e5e1e7] hover:border-[#bfcab5] rounded-full px-2.5 sm:px-3 py-1 shadow-sm transition-all">
           <Calendar className="w-3.5 h-3.5 text-[#404a3a] mr-1.5 shrink-0" />
           <span className="text-[12px] text-[#1c1b1f] font-semibold mr-1.5 whitespace-nowrap">
             {currentWeek.shortLabel || `Week ${currentWeek.weekNumber}`}
@@ -90,14 +108,29 @@ export const Header: React.FC<HeaderProps> = ({
           <ChevronDown className="w-3.5 h-3.5 text-[#404a3a] pointer-events-none" />
         </div>
 
-        {/* Auto-saved Live Ping Indicator */}
-        <div className="hidden sm:flex items-center gap-1.5 bg-[#beedd3]/50 px-2.5 py-1 rounded-full text-[#3c6753]">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#186700] opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-[#186700]"></span>
-          </span>
-          <span className="text-[11px] font-semibold whitespace-nowrap">Auto-saved locally</span>
-        </div>
+        {/* Cloud Sync Status Badge */}
+        {user ? (
+          <div className="hidden sm:flex items-center gap-1.5 bg-[#beedd3]/50 px-2.5 py-1 rounded-full text-[#005338]">
+            <span className="relative flex h-2 w-2">
+              <span
+                className={`inline-flex h-full w-full rounded-full bg-[#186700] ${
+                  isSyncing ? 'animate-ping' : ''
+                }`}
+              />
+            </span>
+            <Cloud className="w-3 h-3 text-[#186700]" />
+            <span className="text-[11px] font-semibold whitespace-nowrap hidden lg:inline">
+              Firestore Synced
+            </span>
+          </div>
+        ) : (
+          <div className="hidden sm:flex items-center gap-1.5 bg-[#f0ecf2] px-2.5 py-1 rounded-full text-[#404a3a]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#404a3a]" />
+            <span className="text-[11px] font-medium whitespace-nowrap hidden lg:inline">
+              Local Storage
+            </span>
+          </div>
+        )}
 
         {/* Theme Accent Switcher */}
         <button
@@ -107,26 +140,75 @@ export const Header: React.FC<HeaderProps> = ({
           type="button"
         >
           <Palette className="w-4 h-4" />
-          <span className="text-[11px] font-mono hidden md:inline capitalize">{themeColor}</span>
+          <span className="text-[11px] font-mono hidden xl:inline capitalize">{themeColor}</span>
         </button>
 
-        {/* Workspace Identity Profile */}
-        <div className="hidden xl:flex flex-col text-right">
-          <span className="text-[13px] text-[#1c1b1f] font-semibold leading-none">Solo Workspace</span>
-          <span className="text-[11px] text-[#404a3a] leading-tight">Senior Product Designer</span>
-        </div>
+        {/* User Account / Google Sign-In */}
+        {user ? (
+          <div className="relative">
+            <button
+              onClick={() => setShowProfileMenu(!showProfileMenu)}
+              className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-[#218300]/40 transition-all"
+              type="button"
+            >
+              {user.photoURL ? (
+                <img
+                  src={user.photoURL}
+                  alt={user.displayName || 'User Avatar'}
+                  className="w-8 h-8 rounded-full object-cover border border-[#e5e1e7]"
+                />
+              ) : (
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-[13px] shadow-sm text-white ${
+                    themeColor === 'indigo' ? 'bg-[#4f46e5]' : 'bg-[#218300]'
+                  }`}
+                >
+                  {user.displayName ? user.displayName.charAt(0).toUpperCase() : <User className="w-4 h-4" />}
+                </div>
+              )}
+            </button>
 
-        {/* User Avatar */}
-        <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-[13px] shadow-sm ${
-            themeColor === 'indigo'
-              ? 'bg-[#4f46e5] text-white'
-              : 'bg-[#218300] text-white'
-          }`}
-          title="Solo Workspace Account Profile"
-        >
-          <User className="w-4 h-4" />
-        </div>
+            {/* Profile Dropdown */}
+            {showProfileMenu && (
+              <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-[#e5e1e7] py-2 z-50 animate-in fade-in zoom-in-95">
+                <div className="px-4 py-2 border-b border-[#e5e1e7]">
+                  <p className="text-[13px] font-bold text-[#1c1b1f] truncate">
+                    {user.displayName || 'Solo Workspace'}
+                  </p>
+                  <p className="text-[11px] text-[#404a3a] truncate">{user.email}</p>
+                  <div className="flex items-center gap-1 mt-1 text-[10px] text-[#186700] font-medium">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Connected to Firestore</span>
+                  </div>
+                </div>
+
+                <div className="px-2 pt-1">
+                  <button
+                    onClick={() => {
+                      setShowProfileMenu(false);
+                      onSignOut();
+                    }}
+                    type="button"
+                    className="w-full flex items-center gap-2 px-3 py-2 text-[12px] font-medium text-[#ba1a1a] hover:bg-[#ffdad6]/40 rounded-lg transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Log Out</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <button
+            onClick={onSignIn}
+            type="button"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg ${primaryBtnClass} text-[12px] font-semibold transition-all shadow-xs active:scale-95`}
+          >
+            <LogIn className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Sign In with Google</span>
+            <span className="sm:hidden">Sign In</span>
+          </button>
+        )}
       </div>
     </header>
   );

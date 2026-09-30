@@ -1,0 +1,132 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // --- Users Collection ---
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+
+      function isValidUser(data) {
+        return data.keys().hasAll(['userId', 'email'])
+          && data.keys().hasOnly(['userId', 'email', 'displayName', 'photoURL', 'createdAt'])
+          && data.userId == request.auth.uid
+          && data.email is string
+          && data.email.size() <= 150;
+      }
+
+      allow create: if isOwner(userId) && isValidUser(incoming());
+      allow update: if isOwner(userId) && isValidUser(incoming()) && incoming().userId == existing().userId;
+      allow delete: if isOwner(userId);
+    }
+
+    // --- Tasks Collection ---
+    match /tasks/{taskId} {
+      function isValidTask(data) {
+        return data.keys().hasAll(['id', 'ownerId', 'weekId', 'jobName', 'requester', 'status'])
+          && data.keys().hasOnly(['id', 'ownerId', 'weekId', 'jobName', 'requester', 'status', 'issue', 'tag', 'category', 'escalatedTo', 'timeBlocked', 'nextStep', 'targetEta', 'createdAt', 'updatedAt'])
+          && data.ownerId == request.auth.uid
+          && data.id is string && data.id.size() <= 128
+          && data.weekId is string && data.weekId.size() <= 128
+          && data.jobName is string && data.jobName.size() > 0 && data.jobName.size() <= 300
+          && data.requester is string && data.requester.size() > 0 && data.requester.size() <= 150
+          && data.status in ['In Progress', 'Completed', 'Blocked']
+          && (!('issue' in data) || (data.issue is string && data.issue.size() <= 1000))
+          && (!('tag' in data) || (data.tag is string && data.tag.size() <= 50))
+          && (!('nextStep' in data) || (data.nextStep is string && data.nextStep.size() <= 300))
+          && (!('targetEta' in data) || (data.targetEta is string && data.targetEta.size() <= 100));
+      }
+
+      allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      allow create: if isSignedIn() && isValidId(taskId) && isValidTask(incoming()) && incoming().ownerId == request.auth.uid;
+      allow update: if isSignedIn() && isValidId(taskId) && isValidTask(incoming()) && existing().ownerId == request.auth.uid && incoming().ownerId == existing().ownerId;
+      allow delete: if isSignedIn() && isValidId(taskId) && existing().ownerId == request.auth.uid;
+    }
+
+    // --- Weeks Collection ---
+    match /weeks/{weekId} {
+      function isValidWeek(data) {
+        return data.keys().hasAll(['id', 'ownerId', 'weekNumber', 'label', 'status'])
+          && data.keys().hasOnly(['id', 'ownerId', 'weekNumber', 'label', 'shortLabel', 'dateRange', 'status', 'quarter', 'retrospectiveNote', 'closedBy', 'syncAgo', 'reviewers', 'createdAt'])
+          && data.ownerId == request.auth.uid
+          && data.id is string && data.id.size() <= 128
+          && data.weekNumber is number
+          && data.label is string && data.label.size() <= 200
+          && data.status in ['active', 'closed'];
+      }
+
+      allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      allow create: if isSignedIn() && isValidId(weekId) && isValidWeek(incoming()) && incoming().ownerId == request.auth.uid;
+      allow update: if isSignedIn() && isValidId(weekId) && isValidWeek(incoming()) && existing().ownerId == request.auth.uid && incoming().ownerId == existing().ownerId;
+      allow delete: if isSignedIn() && isValidId(weekId) && existing().ownerId == request.auth.uid;
+    }
+
+    // --- Blockers Collection ---
+    match /blockers/{blockerId} {
+      function isValidBlocker(data) {
+        return data.keys().hasAll(['id', 'ownerId', 'title', 'severity', 'escalatedTo', 'rootCauseDetail'])
+          && data.keys().hasOnly(['id', 'ownerId', 'taskId', 'title', 'severity', 'severityLabel', 'daysStalled', 'taskRef', 'rootCauseType', 'rootCauseDetail', 'requester', 'escalatedTo', 'lastUpdated', 'resolvedDate', 'resolvedBy', 'resolutionOutcome', 'clearanceDuration', 'isResolved', 'createdAt'])
+          && data.ownerId == request.auth.uid
+          && data.id is string && data.id.size() <= 128
+          && data.title is string && data.title.size() > 0 && data.title.size() <= 300
+          && data.severity in ['critical', 'risk', 'resolved']
+          && data.escalatedTo is string && data.escalatedTo.size() <= 200
+          && data.rootCauseDetail is string && data.rootCauseDetail.size() <= 2000;
+      }
+
+      allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      allow create: if isSignedIn() && isValidId(blockerId) && isValidBlocker(incoming()) && incoming().ownerId == request.auth.uid;
+      allow update: if isSignedIn() && isValidId(blockerId) && isValidBlocker(incoming()) && existing().ownerId == request.auth.uid && incoming().ownerId == existing().ownerId;
+      allow delete: if isSignedIn() && isValidId(blockerId) && existing().ownerId == request.auth.uid;
+    }
+
+    // --- Reports Collection ---
+    match /reports/{reportId} {
+      function isValidReport(data) {
+        return data.keys().hasAll(['id', 'ownerId', 'title', 'content'])
+          && data.keys().hasOnly(['id', 'ownerId', 'title', 'timestamp', 'toneBadge', 'toneBadgeColor', 'itemCount', 'wordCount', 'content', 'preview', 'createdAt'])
+          && data.ownerId == request.auth.uid
+          && data.id is string && data.id.size() <= 128
+          && data.title is string && data.title.size() <= 200
+          && data.content is string && data.content.size() <= 50000;
+      }
+
+      allow get: if isSignedIn() && existing().ownerId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      allow create: if isSignedIn() && isValidId(reportId) && isValidReport(incoming()) && incoming().ownerId == request.auth.uid;
+      allow update: if isSignedIn() && isValidId(reportId) && isValidReport(incoming()) && existing().ownerId == request.auth.uid && incoming().ownerId == existing().ownerId;
+      allow delete: if isSignedIn() && isValidId(reportId) && existing().ownerId == request.auth.uid;
+    }
+  }
+}
